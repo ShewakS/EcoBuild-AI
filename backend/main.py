@@ -7,17 +7,18 @@ for the Next.js frontend dev server.
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from config import get_settings
-from routes import predict, rates, estimate
+from routes import predict, rates, estimate, carbon
 
 settings = get_settings()
 
 app = FastAPI(
-    title="EcoBuild AI — Cost Estimation API",
+    title="EcoBuild AI — Cost & Carbon Estimation API",
     description=(
-        "Two-stage construction cost estimation platform for Tamil Nadu. "
-        "Stage A: ML quantity prediction. Stage B: Rate master CRUD with versioning."
+        "Construction cost and embodied carbon estimation platform for Tamil Nadu. "
+        "Phase 1: Explicit calculation-based cost. Phase 2: ML quantity prediction. "
+        "Phase 3: IFC Indian carbon emission factors integration."
     ),
-    version="1.0.0",
+    version="1.1.0",
     docs_url="/docs",
     redoc_url="/redoc",
 )
@@ -35,6 +36,7 @@ app.add_middleware(
 app.include_router(predict.router)
 app.include_router(rates.router)
 app.include_router(estimate.router)
+app.include_router(carbon.router)
 
 
 @app.get("/", tags=["Health"])

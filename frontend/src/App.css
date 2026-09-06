@@ -1,6 +1,3 @@
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap");
-@import "tailwindcss";
-
 /* ── Design Tokens ─────────────────────────────────────────────────────────── */
 :root {
   /* Backgrounds */
@@ -39,17 +36,21 @@
 }
 
 /* ── Base ───────────────────────────────────────────────────────────────────── */
-*, *::before, *::after { box-sizing: border-box; }
-
 html { scroll-behavior: smooth; }
 
 body {
   background-color: var(--bg-base);
   color: var(--text-body);
-  font-family: "Inter", system-ui, -apple-system, sans-serif;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
   font-feature-settings: "kern" 1, "liga" 1, "cv11" 1;
   -webkit-font-smoothing: antialiased;
   min-height: 100vh;
+}
+
+#root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
 /* ── Scrollbar ──────────────────────────────────────────────────────────────── */
@@ -137,3 +138,17 @@ input[type="number"] { -moz-appearance: textfield; }
 /* ── Table base ─────────────────────────────────────────────────────────────── */
 table { border-collapse: collapse; width: 100%; }
 th, td { text-align: left; }
+
+/* ── Spinner animation ──────────────────────────────────────────────────────── */
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+.animate-spin { animation: spin 1s linear infinite; }
+
+/* ── Pulse animation ─────────────────────────────────────────────────────── */
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.4; }
+}
+.animate-pulse { animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }

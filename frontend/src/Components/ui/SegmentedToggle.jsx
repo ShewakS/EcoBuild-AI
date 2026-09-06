@@ -1,25 +1,10 @@
-"use client";
-
-interface Option<T extends string> {
-  value: T;
-  label: string;
-}
-
-interface SegmentedToggleProps<T extends string> {
-  id?: string;
-  options: Option<T>[];
-  value: T;
-  onChange: (value: T) => void;
-  className?: string;
-}
-
-export function SegmentedToggle<T extends string>({
+export function SegmentedToggle({
   id,
-  options,
+  options = [],
   value,
   onChange,
-  className = "",
-}: SegmentedToggleProps<T>) {
+  className = '',
+}) {
   return (
     <div
       id={id}
@@ -35,8 +20,8 @@ export function SegmentedToggle<T extends string>({
             onClick={() => onChange(opt.value)}
             className={`px-4 py-1.5 rounded-lg text-sm font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#1A4D2E]/40 ${
               active
-                ? "bg-[#1A4D2E] text-white shadow-sm"
-                : "text-[#4B5945] hover:bg-[#D8D2C4] hover:text-[#1A4D2E]"
+                ? 'bg-[#1A4D2E] text-white shadow-sm'
+                : 'text-[#4B5945] hover:bg-[#D8D2C4] hover:text-[#1A4D2E]'
             }`}
           >
             {opt.label}

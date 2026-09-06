@@ -1,13 +1,16 @@
 """
 POST /api/estimate/cost
 
-Two-Phase Cost & Material Estimation Workflow:
+Two-Phase Cost & Material Estimation Workflow + Carbon Footprint Analysis:
   Phase 1: Calculation-Based Cost Prediction
            Uses explicit civil engineering formulas, live Rate Master unit rates,
            labor man-day rates, and overhead calculations.
   Phase 2: ML Model-Based Material Quantity Prediction
            Uses ecobuild_stage1_estimator.pkl (XGBoost Multi-Target Regressor)
-           exclusively to predict individual material quantities (Cement, Steel, Bricks, Sand, Aggregate).
+           exclusively to predict individual material quantities.
+  Phase 3: Embodied Carbon Footprint & Energy Analysis
+           Calculates total & per-material carbon emissions and energy from
+           the IFC Indian Construction Material Emission Factors dataset.
 """
 from fastapi import APIRouter, HTTPException
 from datetime import datetime, timezone
@@ -17,7 +20,8 @@ from models.project_estimate import (
     EstimateResponse,
 )
 from services.quantity_service import call_stage_a, compute_derived
-from services.cost_service import calculate_cost_explicit
+from services.cost_service import predict_cost_ml
+from services.carbon_service import calculate_carbon_footprint
 from services.rate_service import get_current_rates, get_latest_update_time
 from config import get_db, PROJECT_ESTIMATES_COLLECTION
 
@@ -27,10 +31,11 @@ router = APIRouter(prefix="/api/estimate", tags=["Cost Estimation"])
 @router.post(
     "/cost",
     response_model=EstimateResponse,
-    summary="Generate cost and ML material estimate",
+    summary="Generate cost, ML material quantities, and embodied carbon footprint",
     description=(
-        "Executes Phase 1 (Explicit calculation-based cost prediction using formulas & live Rate Master unit rates) "
-        "and Phase 2 (ML model material quantity prediction using ecobuild_stage1_estimator.pkl)."
+        "Executes Phase 1 (Explicit calculation-based cost prediction using formulas & live Rate Master unit rates), "
+        "Phase 2 (ML model material quantity prediction using ecobuild_stage1_estimator.pkl), and "
+        "Phase 3 (Embodied carbon footprint calculation based on the IFC Indian emission factors dataset)."
     ),
 )
 async def estimate_cost(inputs: ProjectInputs) -> EstimateResponse:
@@ -47,9 +52,6 @@ async def estimate_cost(inputs: ProjectInputs) -> EstimateResponse:
             detail="No rates available. Run: python seed/default_rates.py",
         )
 
-    # ── PHASE 1: Calculation-based Cost Prediction (Explicit Formulas & Rates) ──
-    breakdown, rates_used = calculate_cost_explicit(inputs, derived, rates)
-
     # ── PHASE 2: ML Material Quantity Prediction (ecobuild_stage1_estimator.pkl) ──
     try:
         ml_quantities = await call_stage_a(inputs)
@@ -61,6 +63,12 @@ async def estimate_cost(inputs: ProjectInputs) -> EstimateResponse:
 
     all_quantities = AllQuantities(ml=ml_quantities, derived=derived)
 
+    # ── PHASE 3: Embodied Carbon Footprint Calculation (IFC Indian dataset) ────
+    carbon_footprint = calculate_carbon_footprint(inputs, ml_quantities, derived)
+
+    # ── PHASE 1: ML Model-Based Cost Prediction (ecobuild_cost_model.pkl) ─────
+    breakdown, rates_used = predict_cost_ml(inputs, carbon_tco2=carbon_footprint.total_carbon_tons)
+
     # ── Persist estimate to MongoDB ───────────────────────────────────────────
     now = datetime.now(timezone.utc)
     estimate_doc = {
@@ -69,9 +77,11 @@ async def estimate_cost(inputs: ProjectInputs) -> EstimateResponse:
         "quantities": all_quantities.model_dump(),
         "rates_used": [r.model_dump() for r in rates_used],
         "breakdown": breakdown.model_dump(),
+        "carbon_footprint": carbon_footprint.model_dump(),
         "phase_info": {
-            "phase_1_cost": "Explicit Engineering Formulas & Live Rate Master Unit Rates",
+            "phase_1_cost": "ecobuild_cost_model.pkl (XGBoost Regressor Pipeline)",
             "phase_2_materials": "ecobuild_stage1_estimator.pkl (XGBoost Regressor)",
+            "phase_3_carbon": "IFC Indian Construction Emission Factors (IFC India Database)",
         },
     }
 
@@ -90,6 +100,7 @@ async def estimate_cost(inputs: ProjectInputs) -> EstimateResponse:
         quantities=all_quantities,
         rates_used=rates_used,
         breakdown=breakdown,
+        carbon_footprint=carbon_footprint,
         rates_last_updated=rates_last_updated,
         phase_info=estimate_doc["phase_info"],
     )
@@ -113,4 +124,5 @@ async def get_estimate(estimate_id: str):
     if not doc:
         raise HTTPException(status_code=404, detail=f"Estimate '{estimate_id}' not found.")
     doc["_id"] = str(doc["_id"])
+    doc["estimate_id"] = str(doc["_id"])
     return doc

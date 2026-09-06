@@ -74,6 +74,38 @@ class AllQuantities(BaseModel):
     derived: DerivedQuantities
 
 
+# ─── Carbon Emission Schema (IFC India Dataset) ───────────────────────────────
+
+class MaterialCarbonItem(BaseModel):
+    material_name: str
+    ifc_reference_name: str
+    quantity: float
+    unit: str
+    weight_kg: float
+    gwp_factor_kgco2e_per_kg: float
+    embodied_energy_mj_per_kg: float
+    carbon_emission_kg: float
+    carbon_emission_tons: float
+    embodied_energy_mj: float
+    share_pct: float
+    green_alternative: Optional[str] = None
+
+
+class CarbonFootprint(BaseModel):
+    total_carbon_kg: float
+    total_carbon_tons: float
+    carbon_intensity_kg_per_sqft: float
+    carbon_intensity_kg_per_m2: float
+    total_embodied_energy_mj: float
+    total_embodied_energy_gj: float
+    annual_solar_offset_kg: float = 0.0
+    annual_rwh_offset_kg: float = 0.0
+    green_rating: str
+    materials: list[MaterialCarbonItem]
+    dataset_source: str = "IFC Indian Construction Emission Factors (IFC India Database)"
+    reduction_tips: list[str] = []
+
+
 # ─── Cost Breakdown Schema (Phase 1: Explicit Calculation) ────────────────────
 
 class RateUsed(BaseModel):
@@ -106,6 +138,7 @@ class ProjectEstimateDoc(BaseModel):
     quantities: AllQuantities
     rates_used: list[RateUsed]
     breakdown: CostBreakdown
+    carbon_footprint: Optional[CarbonFootprint] = None
 
 
 # ─── API Response ─────────────────────────────────────────────────────────────
@@ -117,5 +150,6 @@ class EstimateResponse(BaseModel):
     quantities: AllQuantities
     rates_used: list[RateUsed]
     breakdown: CostBreakdown
+    carbon_footprint: Optional[CarbonFootprint] = None
     rates_last_updated: Optional[datetime] = None
     phase_info: Optional[dict[str, Any]] = None
