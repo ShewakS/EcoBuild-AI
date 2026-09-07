@@ -10,6 +10,9 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from config import get_settings
 from routes import (
+    auth,
+    admin,
+    customer,
     predict,
     rates,
     estimate,
@@ -72,8 +75,12 @@ app.add_middleware(
 )
 
 # ── Routers ───────────────────────────────────────────────────────────────────
+app.include_router(auth.router)
+app.include_router(admin.router)
+app.include_router(customer.router)
 app.include_router(projects.router)
 app.include_router(progress.router)
+
 app.include_router(waste.router)
 app.include_router(reuse.router)
 app.include_router(predict.router)

@@ -15,6 +15,10 @@ class Settings(BaseSettings):
         "http://127.0.0.1:3001",
     ]
 
+    JWT_SECRET: str = os.getenv("JWT_SECRET", "ecobuild_super_secure_jwt_secret_key_2026_@#$")
+    JWT_ALGORITHM: str = "HS256"
+    JWT_EXPIRATION_HOURS: int = 48
+
     class Config:
         env_file = ".env"
         env_file_encoding = "utf-8"
@@ -51,3 +55,8 @@ WASTE_THRESHOLDS_COLLECTION = "waste_thresholds"
 REUSE_RULES_COLLECTION = "reuse_rules"
 PROGRESS_UPDATES_COLLECTION = "progress_updates"
 SITE_IMAGES_COLLECTION = "site_images"
+USERS_COLLECTION = "users"
+ORGANIZATIONS_COLLECTION = "organizations"
+SUBSCRIPTIONS_COLLECTION = "subscriptions"
+USAGE_RECORDS_COLLECTION = "usage_records"
+

@@ -125,7 +125,7 @@ def determine_current_stage(stages: List[Dict[str, Any]]) -> str:
     return stages[0]["stage_name"] if stages else "Planning"
 
 
-async def create_project(data: ProjectCreate) -> Dict[str, Any]:
+async def create_project(data: ProjectCreate, user: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
     db = get_db()
     collection = db[PROJECTS_COLLECTION]
     
@@ -139,12 +139,21 @@ async def create_project(data: ProjectCreate) -> Dict[str, Any]:
 
     building_details_dict = data.building_details.dict() if data.building_details else BuildingDetails().dict()
 
+    org_id = user.get("organization_id") if user else None
+    created_by = user.get("user_id") if user else None
+    arch_name = data.architect_name or (user.get("name") if user else "Lead Architect")
+
     doc = {
         "project_id": project_id,
         "project_name": data.project_name,
         "client_name": data.client_name,
         "location": data.location,
-        "architect_name": data.architect_name or "Lead Architect",
+        "architect_name": arch_name,
+        "organization_id": org_id,
+        "created_by": created_by,
+        "customer_id": None,
+        "customer_email": None,
+        "customer_name": data.client_name,
         "status": "in_progress",
         "overall_progress_percent": overall_progress,
         "current_stage": current_stage,
@@ -172,11 +181,103 @@ async def delete_project(project_id: str) -> bool:
     return res.deleted_count > 0
 
 
-async def get_all_projects() -> List[Dict[str, Any]]:
+async def get_all_projects(user: Optional[Dict[str, Any]] = None) -> List[Dict[str, Any]]:
     db = get_db()
     collection = db[PROJECTS_COLLECTION]
-    cursor = collection.find({}, {"_id": 0}).sort("created_at", -1)
+    
+    query = {}
+    if user:
+        role = user.get("role")
+        if role == "SUPER_ADMIN":
+            query = {}
+        elif role == "ARCHITECT":
+            org_id = user.get("organization_id")
+            uid = user.get("user_id")
+            if org_id or uid:
+                query = {"$or": []}
+                if org_id:
+                    query["$or"].append({"organization_id": org_id})
+                if uid:
+                    query["$or"].append({"created_by": uid})
+        elif role == "CUSTOMER":
+            uid = user.get("user_id")
+            email = user.get("email")
+            assigned = user.get("assigned_project_ids", [])
+            query = {
+                "$or": [
+                    {"customer_id": uid},
+                    {"customer_email": email},
+                    {"project_id": {"$in": assigned}}
+                ]
+            }
+
+    cursor = collection.find(query, {"_id": 0}).sort("created_at", -1)
     return await cursor.to_list(length=200)
+
+
+async def assign_customer_to_project(project_id: str, customer_data: Dict[str, Any], architect_user: Dict[str, Any]) -> Dict[str, Any]:
+    """Create or link a customer user to the project, maintaining multi-tenant organization boundaries."""
+    from config import USERS_COLLECTION
+    from services.auth_service import hash_password
+    from models.auth import UserRole, UserStatus
+    
+    db = get_db()
+    email_clean = customer_data["email"].strip().lower()
+    
+    # Check if user already exists
+    user = await db[USERS_COLLECTION].find_one({"email": email_clean})
+    if not user:
+        cust_id = f"USR-CUST-{uuid.uuid4().hex[:6].upper()}"
+        pwd = customer_data.get("password") or "Customer@12345"
+        user_doc = {
+            "user_id": cust_id,
+            "email": email_clean,
+            "password_hash": hash_password(pwd),
+            "name": customer_data.get("name", "Valued Client"),
+            "role": UserRole.CUSTOMER.value,
+            "phone": customer_data.get("phone"),
+            "organization_id": architect_user.get("organization_id"),
+            "status": UserStatus.ACTIVE.value,
+            "assigned_project_ids": [project_id],
+            "created_at": datetime.utcnow()
+        }
+        await db[USERS_COLLECTION].insert_one(user_doc)
+        customer_id = cust_id
+        customer_name = user_doc["name"]
+    else:
+        customer_id = user["user_id"]
+        customer_name = user.get("name", customer_data.get("name", "Valued Client"))
+        # Add project_id to customer assigned list if not present
+        await db[USERS_COLLECTION].update_one(
+            {"email": email_clean},
+            {"$addToSet": {"assigned_project_ids": project_id}}
+        )
+
+    # Update project with customer details
+    updated_project = await db[PROJECTS_COLLECTION].find_one_and_update(
+        {"project_id": project_id},
+        {
+            "$set": {
+                "customer_id": customer_id,
+                "customer_email": email_clean,
+                "customer_name": customer_name,
+                "client_name": customer_name,
+                "updated_at": datetime.utcnow().isoformat()
+            }
+        },
+        return_document=True,
+        projection={"_id": 0}
+    )
+    return {
+        "project": updated_project,
+        "customer": {
+            "customer_id": customer_id,
+            "name": customer_name,
+            "email": email_clean,
+            "phone": customer_data.get("phone")
+        }
+    }
+
 
 
 async def get_project_by_id(project_id: str) -> Optional[Dict[str, Any]]:

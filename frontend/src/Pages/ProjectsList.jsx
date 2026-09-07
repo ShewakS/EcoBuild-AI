@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { getProjects, createProject, deleteProject, updateProject } from '../Assets/api';
+import { getProjects, createProject, deleteProject, updateProject, assignProjectCustomer } from '../Assets/api';
 import { TAMIL_NADU_DISTRICTS } from '../Assets/constants';
 
 export default function ProjectsList() {
@@ -16,6 +16,17 @@ export default function ProjectsList() {
   // Edit Project Modal State
   const [editingProject, setEditingProject] = useState(null);
   const [savingEdit, setSavingEdit] = useState(false);
+
+  // Customer Assignment Modal State
+  const [assigningProject, setAssigningProject] = useState(null);
+  const [customerFormData, setCustomerFormData] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    password: 'Customer@12345',
+  });
+  const [assigning, setAssigning] = useState(false);
+
 
   // Simplified New Project Form State: strictly Name, Client, Location dropdown, Architect
   const [formData, setFormData] = useState({
@@ -108,6 +119,29 @@ export default function ProjectsList() {
       setSavingEdit(false);
     }
   };
+
+  const handleAssignCustomer = async (e) => {
+    e.preventDefault();
+    if (!assigningProject || !customerFormData.email) return;
+    try {
+      setAssigning(true);
+      await assignProjectCustomer(assigningProject.project_id, customerFormData);
+      alert(`Customer portal assigned to "${assigningProject.project_name}" successfully!\n\nEmail: ${customerFormData.email}\nPassword: ${customerFormData.password}`);
+      setAssigningProject(null);
+      setCustomerFormData({
+        name: '',
+        email: '',
+        phone: '',
+        password: 'Customer@12345',
+      });
+      await fetchProjectsList();
+    } catch (err) {
+      alert('Failed to assign customer: ' + err.message);
+    } finally {
+      setAssigning(false);
+    }
+  };
+
 
   // Filtered projects
   const filtered = projects.filter(p => {
@@ -355,16 +389,32 @@ export default function ProjectsList() {
                   </div>
 
                   {/* Card Bottom CTA */}
-                  <div className="px-6 py-3 bg-gray-50 border-t flex items-center justify-between gap-3">
+                  <div className="px-6 py-3 bg-gray-50 border-t flex items-center justify-between gap-2">
                     <Link
                       to={`/architect/${proj.project_id}`}
-                      className="text-xs font-bold px-4 py-2 rounded-xl text-white flex-1 text-center transition-transform active:scale-95"
+                      className="text-xs font-bold px-3 py-2 rounded-xl text-white flex-1 text-center transition-transform active:scale-95"
                       style={{ background: 'var(--green-deep)', textDecoration: 'none' }}
                     >
                       Open Full Workspace →
                     </Link>
+                    <button
+                      onClick={() => {
+                        setAssigningProject(proj);
+                        setCustomerFormData({
+                          name: proj.customer_name || proj.client_name || '',
+                          email: proj.customer_email || '',
+                          phone: '',
+                          password: 'Customer@12345',
+                        });
+                      }}
+                      className="text-xs font-bold px-3 py-2 rounded-xl border border-emerald-600 text-emerald-800 hover:bg-emerald-50 transition-colors flex items-center gap-1 shrink-0"
+                      title="Assign or invite Client to monitor this project"
+                    >
+                      <span>👤</span> {proj.customer_email ? 'Client Linked' : 'Invite Client'}
+                    </button>
                   </div>
                 </div>
+
               );
             })}
           </div>
@@ -556,6 +606,99 @@ export default function ProjectsList() {
           </div>
         </div>
       )}
+
+      {/* ── Assign / Invite Customer Modal ── */}
+      {assigningProject && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+          <div className="bg-white rounded-2xl max-w-md w-full shadow-2xl border p-6">
+            <div className="flex items-center justify-between border-b pb-3 mb-4">
+              <div>
+                <h2 className="text-lg font-bold text-gray-900">Assign / Invite Client</h2>
+                <p className="text-xs text-gray-500">Provide client credentials to access the read-only portal.</p>
+              </div>
+
+              <button
+                onClick={() => setAssigningProject(null)}
+                className="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-600 flex items-center justify-center text-sm font-bold"
+              >
+                ✕
+              </button>
+            </div>
+
+            <form onSubmit={handleAssignCustomer} className="space-y-4">
+              <div className="p-3 bg-emerald-50 rounded-xl border border-emerald-200 text-xs text-emerald-800">
+                Project: <strong>{assigningProject.project_name}</strong> (<code>{assigningProject.project_id}</code>)
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-gray-700 mb-1">Client Full Name *</label>
+                <input
+                  type="text"
+                  required
+                  value={customerFormData.name}
+                  onChange={e => setCustomerFormData({ ...customerFormData, name: e.target.value })}
+                  placeholder="e.g. Dr. V. Sundaram"
+                  className="w-full px-3 py-2 rounded-xl border text-sm outline-none focus:ring-2 focus:ring-[var(--green-mid)]"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-gray-700 mb-1">Client Email Address *</label>
+                <input
+                  type="email"
+                  required
+                  value={customerFormData.email}
+                  onChange={e => setCustomerFormData({ ...customerFormData, email: e.target.value })}
+                  placeholder="client@gmail.com"
+                  className="w-full px-3 py-2 rounded-xl border text-sm outline-none focus:ring-2 focus:ring-[var(--green-mid)]"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-gray-700 mb-1">Phone Number (Optional)</label>
+                <input
+                  type="tel"
+                  value={customerFormData.phone}
+                  onChange={e => setCustomerFormData({ ...customerFormData, phone: e.target.value })}
+                  placeholder="+91 98765 43210"
+                  className="w-full px-3 py-2 rounded-xl border text-sm outline-none focus:ring-2 focus:ring-[var(--green-mid)]"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-gray-700 mb-1">Initial Password</label>
+                <input
+                  type="text"
+                  required
+                  value={customerFormData.password}
+                  onChange={e => setCustomerFormData({ ...customerFormData, password: e.target.value })}
+                  className="w-full px-3 py-2 rounded-xl border text-sm outline-none focus:ring-2 focus:ring-[var(--green-mid)] font-mono"
+                />
+                <p className="text-[11px] text-gray-500 mt-1">Client can sign in at /login with these credentials.</p>
+              </div>
+
+              <div className="border-t pt-4 flex items-center justify-end gap-3 mt-4">
+                <button
+                  type="button"
+                  onClick={() => setAssigningProject(null)}
+                  className="px-4 py-2 rounded-xl border text-gray-700 hover:bg-gray-100 text-xs font-semibold"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={assigning}
+                  className="px-5 py-2 rounded-xl text-white text-xs font-bold shadow-md transition-transform active:scale-95 disabled:opacity-50"
+                  style={{ background: 'var(--green-deep)' }}
+                >
+                  {assigning ? 'Assigning...' : 'Confirm Client Access'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
+
