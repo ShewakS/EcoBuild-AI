@@ -1,7 +1,9 @@
 import { Link, useLocation } from 'react-router-dom';
 
 const NAV_LINKS = [
-  { to: '/cost-estimation', label: 'Cost Estimation' },
+  { to: '/projects', label: 'Projects Workspace' },
+  { to: '/cost-estimation', label: 'Cost & Material Estimator' },
+  { to: '/recommendations', label: 'Eco-Material Recommendations' },
 ];
 
 export default function Navbar() {
@@ -32,7 +34,7 @@ export default function Navbar() {
               EcoBuild AI
             </span>
             <span className="text-xs" style={{ color: 'var(--green-muted)', fontWeight: 500 }}>
-              Tamil Nadu Construction Costs
+              Architect &amp; Construction Platform
             </span>
           </span>
         </Link>

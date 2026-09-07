@@ -22,6 +22,7 @@ from models.project_estimate import (
 from services.quantity_service import call_stage_a, compute_derived
 from services.cost_service import predict_cost_ml
 from services.carbon_service import calculate_carbon_footprint
+from services.sustainability_service import compute_sustainability_score
 from services.rate_service import get_current_rates, get_latest_update_time
 from config import get_db, PROJECT_ESTIMATES_COLLECTION
 
@@ -66,6 +67,13 @@ async def estimate_cost(inputs: ProjectInputs) -> EstimateResponse:
     # ── PHASE 3: Embodied Carbon Footprint Calculation (IFC Indian dataset) ────
     carbon_footprint = calculate_carbon_footprint(inputs, ml_quantities, derived)
 
+    # ── PHASE 4: Rule-Based Sustainability Score (0-100) ───────────────────────
+    sustainability_score = compute_sustainability_score(
+        inputs=inputs,
+        waste_percent=5.0,
+        carbon_footprint_kgco2e_per_sqft=carbon_footprint.carbon_intensity_kg_per_sqft,
+    )
+
     # ── PHASE 1: ML Model-Based Cost Prediction (ecobuild_cost_model.pkl) ─────
     breakdown, rates_used = predict_cost_ml(inputs, carbon_tco2=carbon_footprint.total_carbon_tons)
 
@@ -78,10 +86,12 @@ async def estimate_cost(inputs: ProjectInputs) -> EstimateResponse:
         "rates_used": [r.model_dump() for r in rates_used],
         "breakdown": breakdown.model_dump(),
         "carbon_footprint": carbon_footprint.model_dump(),
+        "sustainability_score": sustainability_score.model_dump(),
         "phase_info": {
             "phase_1_cost": "ecobuild_cost_model.pkl (XGBoost Regressor Pipeline)",
             "phase_2_materials": "ecobuild_stage1_estimator.pkl (XGBoost Regressor)",
             "phase_3_carbon": "IFC Indian Construction Emission Factors (IFC India Database)",
+            "phase_4_sustainability": "Rule-Based Explainable Weighted Engine (0-100)",
         },
     }
 
@@ -89,6 +99,9 @@ async def estimate_cost(inputs: ProjectInputs) -> EstimateResponse:
     col = db[PROJECT_ESTIMATES_COLLECTION]
     result = await col.insert_one(estimate_doc)
     estimate_id = str(result.inserted_id)
+
+    # Update estimate_id in sustainability_score
+    sustainability_score.estimate_id = estimate_id
 
     # ── Fetch rates last-updated timestamp ────────────────────────────────────
     rates_last_updated = await get_latest_update_time()
@@ -101,6 +114,7 @@ async def estimate_cost(inputs: ProjectInputs) -> EstimateResponse:
         rates_used=rates_used,
         breakdown=breakdown,
         carbon_footprint=carbon_footprint,
+        sustainability_score=sustainability_score.model_dump(),
         rates_last_updated=rates_last_updated,
         phase_info=estimate_doc["phase_info"],
     )

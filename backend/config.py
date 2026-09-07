@@ -8,7 +8,12 @@ class Settings(BaseSettings):
     MONGO_URI: str = "mongodb://localhost:27017"
     DB_NAME: str = "ecobuild"
     STAGE_A_URL: str = "http://localhost:8000/api/predict/quantities"
-    CORS_ORIGINS: list[str] = ["http://localhost:3000", "http://127.0.0.1:3000"]
+    CORS_ORIGINS: list[str] = [
+        "http://localhost:3000",
+        "http://127.0.0.1:3000",
+        "http://localhost:3001",
+        "http://127.0.0.1:3001",
+    ]
 
     class Config:
         env_file = ".env"
@@ -40,3 +45,9 @@ def get_db():
 # Collection names
 RATE_MASTER_COLLECTION = "rate_master"
 PROJECT_ESTIMATES_COLLECTION = "project_estimates"
+ECO_MATERIAL_RULES_COLLECTION = "eco_material_rules"
+PROJECTS_COLLECTION = "projects"
+WASTE_THRESHOLDS_COLLECTION = "waste_thresholds"
+REUSE_RULES_COLLECTION = "reuse_rules"
+PROGRESS_UPDATES_COLLECTION = "progress_updates"
+SITE_IMAGES_COLLECTION = "site_images"

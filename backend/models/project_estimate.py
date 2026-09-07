@@ -139,6 +139,7 @@ class ProjectEstimateDoc(BaseModel):
     rates_used: list[RateUsed]
     breakdown: CostBreakdown
     carbon_footprint: Optional[CarbonFootprint] = None
+    sustainability_score: Optional[dict[str, Any]] = None
 
 
 # ─── API Response ─────────────────────────────────────────────────────────────
@@ -151,5 +152,6 @@ class EstimateResponse(BaseModel):
     rates_used: list[RateUsed]
     breakdown: CostBreakdown
     carbon_footprint: Optional[CarbonFootprint] = None
+    sustainability_score: Optional[dict[str, Any]] = None
     rates_last_updated: Optional[datetime] = None
     phase_info: Optional[dict[str, Any]] = None
