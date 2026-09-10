@@ -1,154 +1,241 @@
-/* ── Design Tokens ─────────────────────────────────────────────────────────── */
-:root {
-  /* Backgrounds */
-  --bg-base:          #F5F0E8;   /* warm cream */
-  --bg-card:          #FAFAF7;   /* off-white card */
-  --bg-muted:         #EDE8DC;   /* toggle / input tray */
+/*
+ * App.css — EcoBuild AI Blueprint Design System
+ * Tokens are defined in index.css (:root). This file holds
+ * global component classes shared across all pages.
+ */
 
-  /* Forest green scale */
-  --green-deep:       #1A4D2E;   /* primary accent, headings, active */
-  --green-mid:        #2E7D52;   /* gradient start, fills */
-  --green-light:      #4B7B5C;   /* hover states */
-  --green-muted:      #7A8C6E;   /* labels, secondary text */
-
-  /* Rust / terracotta CTA */
-  --rust:             #C1440E;
-  --rust-hover:       #A33A0C;
-
-  /* Neutral */
-  --text-primary:     #1C1917;   /* near-black for headings */
-  --text-body:        #3D3D3A;
-  --text-muted:       #6B7280;
-  --border:           #DDD8CD;
-
-  /* Dark result panel */
-  --panel-bg:         #1A4D2E;
-  --panel-surface:    #22613A;
-  --panel-muted:      #2E7D52;
-
-  /* Shadows */
-  --shadow-card:      0 2px 12px rgba(26,77,46,0.08);
-  --shadow-panel:     0 8px 32px rgba(26,77,46,0.25);
-
-  /* Radius */
-  --r-card:           16px;
-  --r-sm:             10px;
+/* ── Blueprint grid overlay (used in hero backgrounds) ──────────────────── */
+.blueprint-grid {
+  background-image:
+    linear-gradient(var(--concrete) 1px, transparent 1px),
+    linear-gradient(90deg, var(--concrete) 1px, transparent 1px);
+  background-size: 32px 32px;
+  opacity: 0.5;
 }
 
-/* ── Base ───────────────────────────────────────────────────────────────────── */
-html { scroll-behavior: smooth; }
-
-body {
-  background-color: var(--bg-base);
-  color: var(--text-body);
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
-  font-feature-settings: "kern" 1, "liga" 1, "cv11" 1;
-  -webkit-font-smoothing: antialiased;
-  min-height: 100vh;
+/* ── Section containers ──────────────────────────────────────────────────── */
+.section-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
 }
 
-#root {
-  min-height: 100vh;
+/* ── Card styles — flat, 1px border, no shadow ───────────────────────────── */
+.card {
+  background: #ffffff;
+  border: 1px solid var(--concrete);
+  border-radius: var(--r-card);
+}
+
+.card-hover {
+  transition: border-color 0.15s ease;
+}
+.card-hover:hover {
+  border-color: var(--blueprint);
+}
+
+/* ── Data value display (IBM Plex Mono) ─────────────────────────────────── */
+.data-value {
+  font-family: var(--font-mono);
+  font-size: 0.875rem;
+  color: var(--ink);
+}
+
+.data-label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+}
+
+/* ── Status badges ──────────────────────────────────────────────────────── */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 0.2rem 0.6rem;
+  border-radius: var(--r-sm);
+}
+
+.badge-blueprint { background: var(--blueprint-light); color: var(--blueprint-dark); }
+.badge-eco       { background: var(--eco-light);       color: var(--eco); }
+.badge-alert     { background: #FAF0EB;                color: var(--alert); }
+.badge-concrete  { background: var(--concrete);        color: var(--ink-muted); }
+
+/* ── Buttons ─────────────────────────────────────────────────────────────── */
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1.25rem;
+  background: var(--blueprint);
+  color: #ffffff;
+  border: 1px solid var(--blueprint);
+  border-radius: var(--r-card);
+  font-size: 0.875rem;
+  font-weight: 600;
+  font-family: var(--font-sans);
+  cursor: pointer;
+  text-decoration: none;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+.btn-primary:hover  { background: var(--blueprint-dark); border-color: var(--blueprint-dark); }
+.btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1.25rem;
+  background: transparent;
+  color: var(--ink);
+  border: 1px solid var(--concrete);
+  border-radius: var(--r-card);
+  font-size: 0.875rem;
+  font-weight: 500;
+  font-family: var(--font-sans);
+  cursor: pointer;
+  text-decoration: none;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+.btn-secondary:hover  { border-color: var(--blueprint); color: var(--blueprint); }
+.btn-secondary:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.btn-eco {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1.25rem;
+  background: var(--eco);
+  color: #ffffff;
+  border: 1px solid var(--eco);
+  border-radius: var(--r-card);
+  font-size: 0.875rem;
+  font-weight: 600;
+  font-family: var(--font-sans);
+  cursor: pointer;
+  text-decoration: none;
+}
+.btn-eco:hover { background: #2E6B47; border-color: #2E6B47; }
+
+.btn-alert {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1.25rem;
+  background: #FAF0EB;
+  color: var(--alert);
+  border: 1px solid #E5C0AA;
+  border-radius: var(--r-card);
+  font-size: 0.875rem;
+  font-weight: 600;
+  font-family: var(--font-sans);
+  cursor: pointer;
+}
+.btn-alert:hover { background: #F5E0D0; }
+
+/* ── Form inputs ─────────────────────────────────────────────────────────── */
+.form-input {
+  width: 100%;
+  padding: 0.6rem 0.875rem;
+  background: #ffffff;
+  border: 1px solid var(--concrete);
+  border-radius: var(--r-card);
+  font-size: 0.875rem;
+  font-family: var(--font-sans);
+  color: var(--ink);
+  outline: none;
+  transition: border-color 0.15s ease;
+}
+.form-input:focus { border-color: var(--blueprint); }
+.form-input.error { border-color: var(--alert); }
+.form-input::placeholder { color: var(--ink-muted); }
+
+.form-label {
+  display: block;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--ink);
+  margin-bottom: 0.4rem;
+}
+
+/* ── Toast notifications ─────────────────────────────────────────────────── */
+.toast-container {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  z-index: 9999;
   display: flex;
   flex-direction: column;
+  gap: 0.5rem;
 }
 
-/* ── Scrollbar ──────────────────────────────────────────────────────────────── */
-::-webkit-scrollbar { width: 6px; height: 6px; }
-::-webkit-scrollbar-track { background: var(--bg-muted); }
-::-webkit-scrollbar-thumb { background: var(--green-muted); border-radius: 99px; }
-::-webkit-scrollbar-thumb:hover { background: var(--green-deep); }
-
-/* ── Range input styling ─────────────────────────────────────────────────── */
-input[type="range"] {
-  -webkit-appearance: none;
-  appearance: none;
-  width: 100%;
-  height: 8px;
-  border-radius: 9999px;
-  background: var(--bg-muted);
-  outline: none;
-  cursor: pointer;
-  margin: 0;
+.toast {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 0.875rem 1rem;
+  background: #ffffff;
+  border: 1px solid var(--concrete);
+  border-radius: var(--r-card);
+  box-shadow: 0 4px 16px rgba(22,33,62,0.1);
+  min-width: 280px;
+  max-width: 400px;
+  animation: fadeIn 0.25s ease;
 }
 
-input[type="range"]::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  appearance: none;
-  width: 22px;
-  height: 22px;
-  border-radius: 50%;
-  background: var(--green-deep);
-  border: 3px solid #ffffff;
-  box-shadow: 0 2px 6px rgba(26, 77, 46, 0.35);
-  cursor: grab;
-  transition: transform 0.15s ease, background-color 0.15s ease, box-shadow 0.15s ease;
+.toast-success { border-left: 3px solid var(--eco); }
+.toast-error   { border-left: 3px solid var(--alert); }
+.toast-info    { border-left: 3px solid var(--blueprint); }
+
+/* ── Hairline dividers ───────────────────────────────────────────────────── */
+.divider {
+  border: none;
+  border-top: 1px solid var(--concrete);
+  margin: 1.5rem 0;
 }
 
-input[type="range"]::-webkit-slider-thumb:hover {
-  transform: scale(1.15);
-  background: var(--green-mid);
-  box-shadow: 0 3px 10px rgba(26, 77, 46, 0.45);
+/* ── Section labels (ALL-CAPS eyebrow) ──────────────────────────────────── */
+.section-label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--blueprint);
+  margin-bottom: 0.75rem;
 }
 
-input[type="range"]::-webkit-slider-thumb:active {
-  cursor: grabbing;
-  transform: scale(1.05);
-  background: var(--green-deep);
+/* ── Empty state ─────────────────────────────────────────────────────────── */
+.empty-state {
+  text-align: center;
+  padding: 3rem 1.5rem;
+  border: 1px dashed var(--concrete);
+  border-radius: var(--r-card);
+  color: var(--ink-muted);
+}
+.empty-state-icon {
+  width: 40px;
+  height: 40px;
+  color: var(--concrete);
+  margin: 0 auto 1rem;
 }
 
-input[type="range"]::-moz-range-thumb {
-  width: 22px;
-  height: 22px;
-  border-radius: 50%;
-  background: var(--green-deep);
-  border: 3px solid #ffffff;
-  box-shadow: 0 2px 6px rgba(26, 77, 46, 0.35);
-  cursor: grab;
-  transition: transform 0.15s ease, background-color 0.15s ease;
+/* ── Progress bar ────────────────────────────────────────────────────────── */
+.progress-bar {
+  height: 4px;
+  background: var(--concrete);
+  border-radius: 2px;
+  overflow: hidden;
 }
-
-input[type="range"]::-moz-range-thumb:hover {
-  transform: scale(1.15);
-  background: var(--green-mid);
+.progress-fill {
+  height: 100%;
+  background: var(--blueprint);
+  border-radius: 2px;
+  transition: width 0.4s ease;
 }
-
-input[type="range"]::-moz-range-thumb:active {
-  cursor: grabbing;
-}
-
-/* ── Focus ring ─────────────────────────────────────────────────────────────── */
-*:focus-visible {
-  outline: 2px solid var(--green-mid);
-  outline-offset: 2px;
-}
-
-/* ── Transitions ────────────────────────────────────────────────────────────── */
-button, a, input, select, textarea {
-  transition: background-color 0.18s ease, color 0.18s ease,
-              border-color 0.18s ease, box-shadow 0.18s ease,
-              opacity 0.18s ease;
-}
-
-/* ── Number input spinner hide ──────────────────────────────────────────────── */
-input[type="number"]::-webkit-outer-spin-button,
-input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; }
-input[type="number"] { -moz-appearance: textfield; }
-
-/* ── Table base ─────────────────────────────────────────────────────────────── */
-table { border-collapse: collapse; width: 100%; }
-th, td { text-align: left; }
-
-/* ── Spinner animation ──────────────────────────────────────────────────────── */
-@keyframes spin {
-  from { transform: rotate(0deg); }
-  to   { transform: rotate(360deg); }
-}
-.animate-spin { animation: spin 1s linear infinite; }
-
-/* ── Pulse animation ─────────────────────────────────────────────────────── */
-@keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50%       { opacity: 0.4; }
-}
-.animate-pulse { animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+.progress-fill-eco { background: var(--eco); }

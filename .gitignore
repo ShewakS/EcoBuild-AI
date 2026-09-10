@@ -112,3 +112,6 @@ desktop.ini
 *.temp
 *.swp
 *~
+
+# --- Project Context & Local Planning Files ---
+PROJECT_CONTEXT.md

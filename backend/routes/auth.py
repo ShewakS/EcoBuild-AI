@@ -1,8 +1,10 @@
 from fastapi import APIRouter, HTTPException, Depends, status
-from pydantic import BaseModel
-from typing import Dict, Any
+from pydantic import BaseModel, EmailStr
+from typing import Dict, Any, Optional
+import uuid
+from datetime import datetime
 from config import get_db, USERS_COLLECTION
-from models.auth import LoginRequest, TokenResponse
+from models.auth import LoginRequest, TokenResponse, SubscriptionPlan
 from services.auth_service import verify_password, hash_password, create_access_token
 from middleware.auth import get_current_user
 
@@ -12,6 +14,12 @@ router = APIRouter(prefix="/api/auth", tags=["Authentication"])
 class ChangePasswordRequest(BaseModel):
     old_password: str
     new_password: str
+
+
+class UpdateProfileRequest(BaseModel):
+    name: Optional[str] = None
+    phone: Optional[str] = None
+    company_name: Optional[str] = None
 
 
 @router.post("/login", response_model=TokenResponse)
@@ -117,3 +125,35 @@ async def change_password(
         {"$set": {"password_hash": new_hash}}
     )
     return {"message": "Password changed successfully"}
+
+
+@router.patch("/profile")
+async def update_profile(
+    payload: UpdateProfileRequest,
+    current_user: Dict[str, Any] = Depends(get_current_user)
+):
+    """
+    Allow authenticated user to update their own profile (name, phone, company_name).
+    """
+    db = get_db()
+    updates = {}
+    if payload.name is not None:
+        updates["name"] = payload.name.strip()
+    if payload.phone is not None:
+        updates["phone"] = payload.phone.strip()
+    if payload.company_name is not None:
+        updates["company_name"] = payload.company_name.strip()
+
+    if not updates:
+        raise HTTPException(status_code=400, detail="No fields to update")
+
+    updates["updated_at"] = datetime.utcnow()
+    await db[USERS_COLLECTION].update_one(
+        {"user_id": current_user["user_id"]},
+        {"$set": updates}
+    )
+    updated_user = await db[USERS_COLLECTION].find_one(
+        {"user_id": current_user["user_id"]},
+        {"_id": 0, "password_hash": 0}
+    )
+    return {"message": "Profile updated successfully", "user": updated_user}

@@ -1,0 +1,21 @@
+/* AboutUs.css — EcoBuild AI Blueprint Design System */
+
+.about-page {
+  width: 100%;
+  min-height: 100vh;
+  background-color: var(--paper);
+}
+
+.about-hero {
+  position: relative;
+  background: var(--global-gradient-hero);
+  border-bottom: 1px solid var(--concrete);
+}
+
+.about-hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--global-radial-glow);
+  pointer-events: none;
+}

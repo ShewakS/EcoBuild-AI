@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, useSearchParams, Link } from 'react-router-dom';
+import { Leaf } from 'lucide-react';
 import {
   getProject,
   updateProject,
@@ -1368,7 +1369,7 @@ export default function ArchitectDashboard() {
                   <div className="flex items-center justify-between border-b pb-3 mb-4">
                     <div>
                       <div className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-blue-50 text-blue-700 mb-1">
-                        <span>🌱</span> IFC Indian Carbon Factor Dataset
+                        <Leaf size={14} className="text-emerald-600" /> IFC Indian Carbon Factor Dataset
                       </div>
                       <h3 className="text-base font-bold text-gray-900">Embodied Carbon Footprint</h3>
                     </div>

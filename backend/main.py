@@ -23,6 +23,8 @@ from routes import (
     waste,
     reuse,
     progress,
+    contact,
+    report,
 )
 from services.recommendation_service import ensure_rules_seeded
 from services.waste_service import ensure_waste_thresholds_seeded
@@ -49,16 +51,23 @@ app.mount("/uploads", StaticFiles(directory=UPLOAD_DIR), name="uploads")
 
 @app.on_event("startup")
 async def startup_event():
+    # Seed default SUPER_ADMIN and demo users idempotently to MongoDB Atlas
+    try:
+        from seed.seed_auth import seed_auth_data
+        await seed_auth_data()
+    except Exception as e:
+        print(f"Startup warning: could not seed auth data: {e}")
+
     try:
         await ensure_rules_seeded()
     except Exception as e:
         print(f"Startup warning: could not seed eco rules: {e}")
-        
+
     try:
         await ensure_waste_thresholds_seeded()
     except Exception as e:
         print(f"Startup warning: could not seed waste thresholds: {e}")
-        
+
     try:
         await ensure_reuse_rules_seeded()
     except Exception as e:
@@ -80,6 +89,8 @@ app.include_router(admin.router)
 app.include_router(customer.router)
 app.include_router(projects.router)
 app.include_router(progress.router)
+app.include_router(contact.router)
+app.include_router(report.router)
 
 app.include_router(waste.router)
 app.include_router(reuse.router)

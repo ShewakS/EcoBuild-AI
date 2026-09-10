@@ -1,5 +1,6 @@
 import React from 'react';
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
+import { LayoutDashboard, Home, Boxes, DollarSign, Leaf, Calendar, Camera } from 'lucide-react';
 import { useAuth } from '../../Context/AuthContext';
 import './CustomerLayout.css';
 
@@ -26,49 +27,49 @@ export default function CustomerLayout() {
             to="/customer/dashboard"
             className={({ isActive }) => `customer-nav-item ${isActive ? 'active' : ''}`}
           >
-            <span>📊</span> Dashboard
+            <LayoutDashboard size={16} /> Dashboard
           </NavLink>
 
           <NavLink
             to="/customer/project"
             className={({ isActive }) => `customer-nav-item ${isActive ? 'active' : ''}`}
           >
-            <span>🏡</span> My Project
+            <Home size={16} /> My Project
           </NavLink>
 
           <NavLink
             to="/customer/materials"
             className={({ isActive }) => `customer-nav-item ${isActive ? 'active' : ''}`}
           >
-            <span>🧱</span> Materials
+            <Boxes size={16} /> Materials
           </NavLink>
 
           <NavLink
             to="/customer/cost"
             className={({ isActive }) => `customer-nav-item ${isActive ? 'active' : ''}`}
           >
-            <span>💰</span> Cost Breakdown
+            <DollarSign size={16} /> Cost Breakdown
           </NavLink>
 
           <NavLink
             to="/customer/sustainability"
             className={({ isActive }) => `customer-nav-item ${isActive ? 'active' : ''}`}
           >
-            <span>🌱</span> Carbon & Eco
+            <Leaf size={16} /> Carbon & Eco
           </NavLink>
 
           <NavLink
             to="/customer/progress"
             className={({ isActive }) => `customer-nav-item ${isActive ? 'active' : ''}`}
           >
-            <span>📅</span> Construction Stages
+            <Calendar size={16} /> Construction Stages
           </NavLink>
 
           <NavLink
             to="/customer/photos"
             className={({ isActive }) => `customer-nav-item ${isActive ? 'active' : ''}`}
           >
-            <span>📷</span> Site Photos
+            <Camera size={16} /> Inspection Photos
           </NavLink>
         </nav>
 

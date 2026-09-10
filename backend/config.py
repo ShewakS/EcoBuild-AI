@@ -3,6 +3,18 @@ from motor.motor_asyncio import AsyncIOMotorClient
 from functools import lru_cache
 import os
 
+# ── Force Google DNS for MongoDB Atlas SRV resolution ─────────────────────────
+# pymongo uses dnspython to resolve mongodb+srv:// hostnames. On networks where
+# the system DNS is slow or blocks SRV lookups, resolution fails. Overriding
+# the default resolver to use Google's public DNS (8.8.8.8 / 8.8.4.4) fixes it.
+try:
+    import dns.resolver
+    _google_resolver = dns.resolver.Resolver(configure=False)
+    _google_resolver.nameservers = ["8.8.8.8", "8.8.4.4"]
+    dns.resolver.default_resolver = _google_resolver
+except Exception:
+    pass  # dnspython not available; pymongo will use system DNS
+
 
 class Settings(BaseSettings):
     MONGO_URI: str = "mongodb://localhost:27017"
@@ -18,6 +30,13 @@ class Settings(BaseSettings):
     JWT_SECRET: str = os.getenv("JWT_SECRET", "ecobuild_super_secure_jwt_secret_key_2026_@#$")
     JWT_ALGORITHM: str = "HS256"
     JWT_EXPIRATION_HOURS: int = 48
+
+    # ── SMTP Email (optional — leave blank to use console-log stub) ──────────
+    SMTP_HOST: str = ""
+    SMTP_PORT: int = 587
+    SMTP_USER: str = ""
+    SMTP_PASS: str = ""
+    SMTP_FROM: str = "noreply@ecobuild.ai"
 
     class Config:
         env_file = ".env"
@@ -37,7 +56,12 @@ def get_client() -> AsyncIOMotorClient:
     global _client
     if _client is None:
         settings = get_settings()
-        _client = AsyncIOMotorClient(settings.MONGO_URI)
+        _client = AsyncIOMotorClient(
+            settings.MONGO_URI,
+            serverSelectionTimeoutMS=10000,   # 10 s to find a primary
+            connectTimeoutMS=10000,
+            socketTimeoutMS=30000,
+        )
     return _client
 
 

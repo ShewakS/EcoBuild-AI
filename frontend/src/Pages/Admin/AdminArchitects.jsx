@@ -5,6 +5,7 @@ import {
   updateArchitectStatus,
   updateArchitectPlan,
 } from '../../Assets/api';
+import { UserPlus, CheckCircle, AlertCircle, Copy, Eye, EyeOff } from 'lucide-react';
 
 export default function AdminArchitects() {
   const [architects, setArchitects] = useState([]);
@@ -12,6 +13,8 @@ export default function AdminArchitects() {
   const [error, setError] = useState('');
   const [showModal, setShowModal] = useState(false);
   const [actionMessage, setActionMessage] = useState('');
+  const [newCredentials, setNewCredentials] = useState(null); // { name, email, temp_password, email_sent }
+  const [showPw, setShowPw] = useState(false);
 
   // New architect form state
   const [formData, setFormData] = useState({
@@ -72,17 +75,15 @@ export default function AdminArchitects() {
     try {
       setCreating(true);
       setError('');
-      await createAdminArchitect(formData);
+      const result = await createAdminArchitect(formData);
       setShowModal(false);
-      setFormData({
-        name: '',
-        company_name: '',
-        email: '',
-        phone: '',
-        plan: 'Professional',
-        password: 'Architect@12345',
+      setFormData({ name: '', company_name: '', email: '', phone: '', plan: 'Professional', password: 'Architect@12345' });
+      setNewCredentials({
+        name: result.name || formData.name,
+        email: result.email || formData.email,
+        temp_password: result.temp_password,
+        email_sent: result.email_sent,
       });
-      setActionMessage('New Architect tenant created successfully!');
       fetchArchitects();
     } catch (err) {
       setError(err.message || 'Failed to create architect');
@@ -101,23 +102,69 @@ export default function AdminArchitects() {
           </p>
         </div>
         <button
-          className="admin-btn admin-btn-primary"
+          className="btn-primary"
           onClick={() => setShowModal(true)}
-          style={{ padding: '0.65rem 1.25rem', fontSize: '0.92rem' }}
+          id="admin-create-architect-btn"
         >
-          ➕ Provision New Architect
+          <UserPlus size={14} />
+          Create Architect Account
         </button>
       </div>
 
       {actionMessage && (
-        <div className="login-alert-info" style={{ marginBottom: '1.5rem' }}>
-          ✓ {actionMessage}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.75rem 1rem', background: 'var(--eco-light)', border: '1px solid #91CCAA', borderRadius: 3, marginBottom: '1rem', fontSize: '0.85rem', color: 'var(--eco)' }}>
+          <CheckCircle size={14} />{actionMessage}
         </div>
       )}
 
       {error && (
-        <div className="login-alert-error" style={{ marginBottom: '1.5rem' }}>
-          <span>⚠</span> {error}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.75rem 1rem', background: '#FAF0EB', border: '1px solid #E5C0AA', borderRadius: 3, marginBottom: '1rem', fontSize: '0.85rem', color: 'var(--alert)' }}>
+          <AlertCircle size={14} />{error}
+        </div>
+      )}
+
+      {/* ── Credentials overlay (show once after creation) ── */}
+      {newCredentials && (
+        <div style={{ background: 'var(--blueprint-light)', border: '1px solid #AABFEA', borderRadius: 3, padding: '1.25rem', marginBottom: '1.25rem' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.75rem' }}>
+            <div>
+              <div style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--blueprint)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Architect Account Created</div>
+              <div style={{ fontSize: '0.75rem', color: 'var(--ink-muted)', marginTop: 2 }}>
+                {newCredentials.email_sent
+                  ? 'Credentials have been emailed to the architect.'
+                  : 'Email delivery not configured. Share these credentials securely — they will not be shown again.'}
+              </div>
+            </div>
+            <button onClick={() => setNewCredentials(null)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--ink-muted)', fontSize: '1.1rem', lineHeight: 1 }}>&times;</button>
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
+            <div>
+              <div className="data-label" style={{ marginBottom: 4 }}>Name</div>
+              <div className="data-value">{newCredentials.name}</div>
+            </div>
+            <div>
+              <div className="data-label" style={{ marginBottom: 4 }}>Email</div>
+              <div className="data-value">{newCredentials.email}</div>
+            </div>
+            <div style={{ gridColumn: '1 / -1' }}>
+              <div className="data-label" style={{ marginBottom: 4 }}>Temporary Password</div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <code style={{ flex: 1, padding: '0.4rem 0.6rem', background: '#ffffff', border: '1px solid #AABFEA', borderRadius: 2, fontFamily: 'var(--font-mono)', fontSize: '0.875rem' }}>
+                  {showPw ? newCredentials.temp_password : '•'.repeat(newCredentials.temp_password?.length || 12)}
+                </code>
+                <button onClick={() => setShowPw(p => !p)} title={showPw ? 'Hide' : 'Show'} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--ink-muted)' }}>
+                  {showPw ? <EyeOff size={14} /> : <Eye size={14} />}
+                </button>
+                <button
+                  title="Copy to clipboard"
+                  onClick={() => navigator.clipboard.writeText(newCredentials.temp_password)}
+                  style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--blueprint)' }}
+                >
+                  <Copy size={14} />
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
       )}
 
