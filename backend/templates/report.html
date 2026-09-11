@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>EcoBuild AI — Project Report — {{ project.project_name }}</title>
+  <style>
+    /* Print-safe blueprint design system */
+    @page {
+      size: A4;
+      margin: 20mm 18mm 20mm 18mm;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, 'Helvetica Neue', Arial, sans-serif;
+      font-size: 9pt;
+      color: #16213E;
+      line-height: 1.5;
+    }
+
+    /* ── Header ── */
+    .report-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      padding-bottom: 12pt;
+      border-bottom: 2px solid #2B5CB0;
+      margin-bottom: 16pt;
+    }
+
+    .report-brand {
+      font-size: 14pt;
+      font-weight: 700;
+      color: #2B5CB0;
+      letter-spacing: -0.3px;
+    }
+
+    .report-subtitle {
+      font-size: 7pt;
+      color: #6B7898;
+      margin-top: 2pt;
+      font-family: monospace;
+    }
+
+    .report-meta {
+      text-align: right;
+      font-size: 7.5pt;
+      color: #6B7898;
+    }
+
+    .report-meta strong { color: #16213E; }
+
+    /* ── Section headings ── */
+    .section-heading {
+      font-size: 10pt;
+      font-weight: 700;
+      color: #2B5CB0;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      border-bottom: 1px solid #E7E9EC;
+      padding-bottom: 4pt;
+      margin-top: 18pt;
+      margin-bottom: 10pt;
+    }
+
+    /* ── Project details ── */
+    .detail-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6pt 24pt;
+    }
+
+    .detail-item label {
+      display: block;
+      font-size: 6.5pt;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: #6B7898;
+      margin-bottom: 2pt;
+    }
+
+    .detail-item .value {
+      font-size: 9pt;
+      color: #16213E;
+      font-family: monospace;
+    }
+
+    /* ── Tables ── */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 12pt;
+    }
+
+    thead {
+      background: #EEF3FB;
+    }
+
+    th {
+      font-size: 7pt;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #2B5CB0;
+      padding: 5pt 6pt;
+      border-bottom: 1px solid #AABFEA;
+      text-align: left;
+    }
+
+    td {
+      font-size: 8.5pt;
+      color: #16213E;
+      padding: 5pt 6pt;
+      border-bottom: 1px solid #E7E9EC;
+      font-family: monospace;
+    }
+
+    tr:last-child td { border-bottom: none; }
+
+    .td-label { font-family: -apple-system, Arial, sans-serif; font-family: inherit; }
+
+    /* ── Score card ── */
+    .score-card {
+      border: 1px solid #91CCAA;
+      background: #EBF5EF;
+      border-radius: 2pt;
+      padding: 10pt 14pt;
+      display: flex;
+      align-items: center;
+      gap: 16pt;
+    }
+
+    .score-value {
+      font-size: 32pt;
+      font-weight: 700;
+      color: #3E8E5E;
+      font-family: monospace;
+      line-height: 1;
+    }
+
+    .score-label {
+      font-size: 7pt;
+      color: #6B7898;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .score-desc {
+      font-size: 9pt;
+      color: #16213E;
+      margin-top: 4pt;
+    }
+
+    /* ── Footer ── */
+    .report-footer {
+      margin-top: 24pt;
+      padding-top: 8pt;
+      border-top: 1px solid #E7E9EC;
+      display: flex;
+      justify-content: space-between;
+      font-size: 7pt;
+      color: #6B7898;
+      font-family: monospace;
+    }
+
+    .page-break { page-break-before: always; }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <div class="report-header">
+    <div>
+      <div class="report-brand">EcoBuild AI</div>
+      <div class="report-subtitle">Project Estimation Report</div>
+    </div>
+    <div class="report-meta">
+      <div><strong>Report ID:</strong> {{ estimate_id }}</div>
+      <div><strong>Generated:</strong> {{ generated_at }}</div>
+      <div><strong>Architect:</strong> {{ project.architect_name | default('N/A') }}</div>
+    </div>
+  </div>
+
+  <!-- Project Details -->
+  <div class="section-heading">Project Details</div>
+  <div class="detail-grid">
+    <div class="detail-item">
+      <label>Project Name</label>
+      <div class="value">{{ project.project_name | default('N/A') }}</div>
+    </div>
+    <div class="detail-item">
+      <label>Project ID</label>
+      <div class="value">{{ project.project_id | default('N/A') }}</div>
+    </div>
+    <div class="detail-item">
+      <label>Client</label>
+      <div class="value">{{ project.client_name | default('N/A') }}</div>
+    </div>
+    <div class="detail-item">
+      <label>Location</label>
+      <div class="value">{{ project.location | default('N/A') }}, {{ project.district | default('N/A') }}</div>
+    </div>
+    <div class="detail-item">
+      <label>Plot Area</label>
+      <div class="value">{{ project.plot_area_sqft | default('N/A') }} sq ft</div>
+    </div>
+    <div class="detail-item">
+      <label>Built-up Area</label>
+      <div class="value">{{ estimate.inputs.total_builtup_area | default('N/A') }} sq ft</div>
+    </div>
+    <div class="detail-item">
+      <label>Floors</label>
+      <div class="value">{{ estimate.inputs.num_floors | default('N/A') }}</div>
+    </div>
+    <div class="detail-item">
+      <label>Structure Type</label>
+      <div class="value">{{ estimate.inputs.structure_type | default('N/A') }}</div>
+    </div>
+  </div>
+
+  <!-- Material Quantities -->
+  <div class="section-heading">Material Quantities (ML-Predicted)</div>
+  <table>
+    <thead>
+      <tr>
+        <th>Material</th>
+        <th>Quantity</th>
+        <th>Unit</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% set ml = estimate.quantities.ml %}
+      {% if ml %}
+        {% for key, val in ml.items() %}
+          {% if val is number %}
+          <tr>
+            <td class="td-label">{{ key | replace('_', ' ') | title }}</td>
+            <td>{{ "%.2f" | format(val) }}</td>
+            <td>
+              {% if 'cement' in key %}bags
+              {% elif 'steel' in key %}kg
+              {% elif 'brick' in key %}units
+              {% elif 'sand' in key or 'aggregate' in key %}m3
+              {% elif 'paint' in key %}L
+              {% else %}units{% endif %}
+            </td>
+          </tr>
+          {% endif %}
+        {% endfor %}
+      {% else %}
+        <tr><td colspan="3">No quantity data available</td></tr>
+      {% endif %}
+    </tbody>
+  </table>
+
+  <!-- Cost Breakdown -->
+  <div class="section-heading">Cost Breakdown</div>
+  <table>
+    <thead>
+      <tr>
+        <th>Category</th>
+        <th style="text-align:right">Amount (INR)</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% set bd = estimate.breakdown %}
+      {% if bd %}
+        <tr><td class="td-label">Materials</td><td style="text-align:right">{{ "{:,.0f}".format(bd.material_cost | default(0)) }}</td></tr>
+        <tr><td class="td-label">Labour</td><td style="text-align:right">{{ "{:,.0f}".format(bd.labour_cost | default(0)) }}</td></tr>
+        <tr><td class="td-label">Overhead / Contingency</td><td style="text-align:right">{{ "{:,.0f}".format(bd.overhead_cost | default(0)) }}</td></tr>
+        <tr style="font-weight:bold; background:#EEF3FB">
+          <td>TOTAL ESTIMATED COST</td>
+          <td style="text-align:right">{{ "{:,.0f}".format(bd.total_cost | default(0)) }}</td>
+        </tr>
+      {% else %}
+        <tr><td colspan="2">No cost data available</td></tr>
+      {% endif %}
+    </tbody>
+  </table>
+
+  <!-- Carbon Footprint -->
+  <div class="section-heading">Embodied Carbon Footprint</div>
+  <table>
+    <thead>
+      <tr>
+        <th>Material</th>
+        <th style="text-align:right">Emissions (kgCO2e)</th>
+        <th style="text-align:right">% of Total</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% set cf = estimate.carbon_footprint %}
+      {% if cf and cf.per_material %}
+        {% for mat_key, mat_data in cf.per_material.items() %}
+        <tr>
+          <td class="td-label">{{ mat_key | replace('_', ' ') | title }}</td>
+          <td style="text-align:right">{{ "%.1f" | format(mat_data.carbon_kg | default(0)) }}</td>
+          <td style="text-align:right">{{ "%.1f" | format(mat_data.percentage | default(0)) }}%</td>
+        </tr>
+        {% endfor %}
+        <tr style="font-weight:bold; background:#EEF3FB">
+          <td>TOTAL CARBON</td>
+          <td style="text-align:right">{{ "%.1f" | format(cf.total_carbon_kg | default(0)) }} kgCO2e</td>
+          <td style="text-align:right">({{ "%.2f" | format(cf.total_carbon_tons | default(0)) }} tCO2e)</td>
+        </tr>
+      {% else %}
+        <tr><td colspan="3">No carbon data available</td></tr>
+      {% endif %}
+    </tbody>
+  </table>
+
+  <!-- Sustainability Score -->
+  <div class="section-heading">Sustainability Score</div>
+  {% set ss = estimate.sustainability_score %}
+  {% if ss %}
+  <div class="score-card">
+    <div>
+      <div class="score-value">{{ ss.total_score | default(0) | round | int }}</div>
+      <div class="score-label">/ 100</div>
+    </div>
+    <div>
+      <div class="score-desc"><strong>Rating: {{ ss.green_rating | default('N/A') }}</strong></div>
+      <div style="font-size:8pt; color:#6B7898; margin-top:4pt;">
+        Carbon factor: {{ ss.carbon_factor_score | default(0) | round | int }}/25 &nbsp;|&nbsp;
+        Waste factor: {{ ss.waste_factor_score | default(0) | round | int }}/20 &nbsp;|&nbsp;
+        Material: {{ ss.material_score | default(0) | round | int }}/20
+      </div>
+    </div>
+  </div>
+  {% else %}
+  <p style="color:#6B7898">No sustainability data available.</p>
+  {% endif %}
+
+  <!-- Footer -->
+  <div class="report-footer">
+    <span>EcoBuild AI &mdash; Confidential Construction Report &mdash; Tamil Nadu, India</span>
+    <span>Generated {{ generated_at }}</span>
+  </div>
+
+</body>
+</html>

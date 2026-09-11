@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Leaf } from 'lucide-react';
 
 export default function EcoMaterialRecommendations({
   recommendations = [],
@@ -11,7 +12,9 @@ export default function EcoMaterialRecommendations({
   if (!recommendations || recommendations.length === 0) {
     return (
       <div className="rounded-3xl border border-[#DDD8CD] bg-white p-6 sm:p-8 shadow-xs text-center flex flex-col items-center justify-center gap-3">
-        <div className="w-12 h-12 rounded-2xl bg-emerald-100 flex items-center justify-center text-2xl">🌱</div>
+        <div className="w-12 h-12 rounded-2xl bg-emerald-100 flex items-center justify-center">
+          <Leaf size={24} color="#1A4D2E" />
+        </div>
         <div>
           <h4 className="text-base font-extrabold text-[#1A4D2E]">Optimal Eco-Materials Selected</h4>
           <p className="text-xs text-[#7A8C6E] max-w-md mx-auto mt-1">

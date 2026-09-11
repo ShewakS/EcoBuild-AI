@@ -219,6 +219,17 @@ export async function loginUser(email, password) {
   return data;
 }
 
+export async function registerUser({ name, email, password, phone, company_name, plan }) {
+  const data = await apiFetch('/api/auth/register', {
+    method: 'POST',
+    body: JSON.stringify({ name, email, password, phone, company_name, plan }),
+  });
+  if (data.access_token && data.user) {
+    setAuthSession(data.access_token, data.user);
+  }
+  return data;
+}
+
 export async function getMe() {
   return apiFetch('/api/auth/me');
 }

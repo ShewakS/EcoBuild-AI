@@ -1,6 +1,8 @@
 from datetime import datetime
 from typing import Dict, Any, List
 import uuid
+import secrets
+import string
 from config import (
     get_db,
     USERS_COLLECTION,
@@ -96,7 +98,9 @@ async def list_architects() -> List[Dict[str, Any]]:
 
 
 async def create_architect(data: Dict[str, Any]) -> Dict[str, Any]:
-    """Create a new Architect/Builder account along with their organization and initial subscription."""
+    """Create a new Architect/Builder account along with their organization and initial subscription.
+    Generates a secure temporary password, attempts email delivery, and returns temp_password
+    in the response so the Admin UI can display it once if email is not configured."""
     db = get_db()
     email_clean = data["email"].strip().lower()
 
@@ -108,12 +112,24 @@ async def create_architect(data: Dict[str, Any]) -> Dict[str, Any]:
     org_id = f"ORG-{uuid.uuid4().hex[:6].upper()}"
 
     plan = data.get("plan", SubscriptionPlan.PROFESSIONAL.value)
-    password = data.get("password") or "Architect@12345"
+
+    # Generate a secure temp password if not provided
+    provided_pw = data.get("password", "").strip()
+    if provided_pw:
+        temp_password = provided_pw
+    else:
+        alphabet = string.ascii_letters + string.digits + "@#$!"
+        temp_password = "".join(secrets.choice(alphabet) for _ in range(12))
+        # Ensure complexity: at least 1 upper, 1 digit, 1 special
+        temp_password = secrets.choice(string.ascii_uppercase) + \
+                        secrets.choice(string.digits) + \
+                        secrets.choice("@#$!") + \
+                        temp_password[:9]
 
     user_doc = {
         "user_id": user_id,
         "email": email_clean,
-        "password_hash": hash_password(password),
+        "password_hash": hash_password(temp_password),
         "name": data["name"],
         "role": UserRole.ARCHITECT.value,
         "phone": data.get("phone"),
@@ -158,7 +174,16 @@ async def create_architect(data: Dict[str, Any]) -> Dict[str, Any]:
     await db[ORGANIZATIONS_COLLECTION].insert_one(org_doc)
     await db[SUBSCRIPTIONS_COLLECTION].insert_one(sub_doc)
 
+    # Attempt email delivery (non-fatal if SMTP not configured)
+    try:
+        from services.email_service import send_architect_credentials
+        email_sent = send_architect_credentials(email_clean, data["name"], temp_password)
+    except Exception:
+        email_sent = False
+
     clean_user = {k: v for k, v in user_doc.items() if k not in ["password_hash", "_id"]}
+    clean_user["temp_password"] = temp_password
+    clean_user["email_sent"] = email_sent
     return clean_user
 
 

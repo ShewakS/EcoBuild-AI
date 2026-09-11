@@ -1,4 +1,5 @@
 import React from 'react';
+import { Leaf } from 'lucide-react';
 
 export default function SustainabilityScoreRing({ sustainability, size = 180, isClientView = false }) {
   if (!sustainability) return null;
@@ -61,8 +62,9 @@ export default function SustainabilityScoreRing({ sustainability, size = 180, is
       <div className="flex items-center justify-between border-b pb-3" style={{ borderColor: 'var(--border)' }}>
         <div className="flex items-center gap-2">
           <span className="w-7 h-7 rounded-lg flex items-center justify-center text-sm" style={{ background: badgeBg }}>
-            🌱
+            <Leaf size={16} color="var(--eco)" />
           </span>
+
           <div>
             <h3 className="text-sm font-extrabold text-[#1A4D2E]">Sustainability Score</h3>
             <p className="text-[11px] text-[#7A8C6E]">Explainable rule-based environmental rating</p>
@@ -174,7 +176,7 @@ export default function SustainabilityScoreRing({ sustainability, size = 180, is
 
         {isClientView && (
           <p className="text-xs text-[#7A8C6E] mt-2 italic leading-relaxed">
-            🌿 Every project starts at a 50-point benchmark. Clean energy adoption and eco-materials boost your score, while material waste and embodied emissions reduce it.
+            Every project starts at a 50-point benchmark. Clean energy adoption and eco-materials boost your score, while material waste and embodied emissions reduce it.
           </p>
         )}
       </div>
