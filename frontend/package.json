@@ -14,7 +14,8 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "check:emoji": "node -e \"const fs=require('fs'),path=require('path');function scan(d){let found=false;for(const f of fs.readdirSync(d)){const p=path.join(d,f);if(fs.statSync(p).isDirectory()){if(scan(p))found=true;}else if(/\\.(jsx?|tsx?|html|css)$/.test(f)){const content=fs.readFileSync(p,'utf8');const matches=content.match(/[\\u{1F300}-\\u{1FAFF}\\u{2600}-\\u{27BF}\\u{1F600}-\\u{1F64F}\\u{1F680}-\\u{1F6FF}]/gu);if(matches){console.error('Emoji found in '+p+': '+matches.join(' '));found=true;}}}return found;}process.exit(scan('src')?1:0);\""
   },
   "eslintConfig": {
     "extends": [

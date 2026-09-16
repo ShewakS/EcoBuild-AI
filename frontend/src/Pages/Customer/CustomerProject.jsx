@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { getCustomerDashboard } from '../../Assets/api';
+import { AlertTriangle, Building2, Ruler, FileText } from 'lucide-react';
 
 export default function CustomerProject() {
   const [project, setProject] = useState(null);
@@ -30,7 +31,7 @@ export default function CustomerProject() {
   if (error || !project) {
     return (
       <div className="login-alert-error">
-        <span>⚠</span> {error || 'No project details found.'}
+        <AlertTriangle size={16} /> {error || 'No project details found.'}
       </div>
     );
   }
@@ -47,7 +48,7 @@ export default function CustomerProject() {
       </div>
 
       <div className="customer-card">
-        <h3 className="customer-card-title"><span>🏛️</span> General Information</h3>
+        <h3 className="customer-card-title flex items-center gap-1.5"><Building2 size={18} className="text-emerald-800" /> General Information</h3>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1.25rem' }}>
           <div>
             <div style={{ fontSize: '0.8rem', color: '#64748b', textTransform: 'uppercase', fontWeight: 700 }}>Project Title</div>
@@ -72,7 +73,7 @@ export default function CustomerProject() {
       </div>
 
       <div className="customer-card">
-        <h3 className="customer-card-title"><span>📐</span> Architectural Dimensions & Spatial Specs</h3>
+        <h3 className="customer-card-title flex items-center gap-1.5"><Ruler size={18} className="text-emerald-800" /> Architectural Dimensions & Spatial Specs</h3>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1.25rem' }}>
           <div style={{ padding: '1rem', background: '#f8fafc', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
             <div style={{ fontSize: '0.78rem', color: '#64748b', fontWeight: 700 }}>BUILDING TYPE</div>
@@ -115,7 +116,7 @@ export default function CustomerProject() {
 
       {project.notes && (
         <div className="customer-card">
-          <h3 className="customer-card-title"><span>📝</span> Project Notes & Scope</h3>
+          <h3 className="customer-card-title flex items-center gap-1.5"><FileText size={18} className="text-emerald-800" /> Project Notes & Scope</h3>
           <p style={{ margin: 0, color: '#334155', lineHeight: '1.6' }}>{project.notes}</p>
         </div>
       )}

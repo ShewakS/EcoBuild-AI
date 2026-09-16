@@ -4,6 +4,56 @@
  * global component classes shared across all pages.
  */
 
+/* ── Section 4: Spacing Scale ───────────────────────────────────────────── */
+/* 4/8/12/16/24/32px canonical spacing tokens                                */
+:root {
+  --space-1:  4px;
+  --space-2:  8px;
+  --space-3:  12px;
+  --space-4:  16px;
+  --space-6:  24px;
+  --space-8:  32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+}
+
+/* ── Section 3: Global Responsive Resets ────────────────────────────────── */
+/* Prevent any child from breaking the viewport horizontally                 */
+*, *::before, *::after { box-sizing: border-box; }
+
+html { overflow-x: hidden; }
+
+/* Images & media — never overflow their container                           */
+img, svg, video { max-width: 100%; height: auto; }
+
+/* ── Section 3: Responsive Container ───────────────────────────────────── */
+.page-container {
+  width: 100%;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 var(--space-6);
+}
+@media (max-width: 640px) {
+  .page-container { padding: 0 var(--space-4); }
+}
+
+/* ── Section 3: Table Overflow Wrapper ──────────────────────────────────── */
+/* Wrap any wide table in .table-scroll to prevent horizontal blowout        */
+.table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+
+/* ── Section 3: Touch Targets ───────────────────────────────────────────── */
+/* WCAG 2.5.5: interactive controls min 44×44px for touch                   */
+button, [role="button"], a, select, input[type="checkbox"], input[type="radio"] {
+  min-height: 44px;
+}
+/* Override for truly inline controls that intentionally remain small        */
+.touch-exempt { min-height: unset; }
+
+/* ── Section 4: Card alignment helpers ──────────────────────────────────── */
+.card-grid { display: grid; align-items: stretch; }
+.stat-row  { display: flex; align-items: baseline; gap: var(--space-2); }
+
 /* ── Blueprint grid overlay (used in hero backgrounds) ──────────────────── */
 .blueprint-grid {
   background-image:

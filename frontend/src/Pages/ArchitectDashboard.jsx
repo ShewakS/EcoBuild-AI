@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, useSearchParams, Link } from 'react-router-dom';
-import { Leaf } from 'lucide-react';
+import { Leaf, Check, AlertTriangle, User, MapPin, Building2, Trash2, Ruler, ClipboardList, Bed, Utensils, Zap, X, DollarSign, Recycle, RefreshCw, Lightbulb, Camera, Settings } from 'lucide-react';
 import {
   getProject,
   updateProject,
@@ -38,7 +38,7 @@ function StepIndicator({ step, active, done, label }) {
           color: done || active ? 'white' : 'var(--green-muted)',
         }}
       >
-        {done ? '✓' : step}
+        {done ? <Check size={14} /> : step}
       </div>
       <span
         className="text-sm font-bold"
@@ -138,7 +138,6 @@ export default function ArchitectDashboard() {
   const [project, setProject] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const [savingSpecs, setSavingSpecs] = useState(false);
 
   // Specifications (Building & Room Dimensions)
   const [specs, setSpecs] = useState({
@@ -189,6 +188,7 @@ export default function ArchitectDashboard() {
 
   // ML Prediction & Rule-Based Computation State
   const [predicting, setPredicting] = useState(false);
+  const [predictionError, setPredictionError] = useState('');
   const [estimateData, setEstimateData] = useState(null);
   const [carbonData, setCarbonData] = useState(null);
   const [wasteData, setWasteData] = useState(null);
@@ -225,10 +225,21 @@ export default function ArchitectDashboard() {
       setProject(data);
 
       const dbDetails = data.building_details || {};
+
+      // Sanitize soil_type: existing DB records may have the old default
+      // "Medium / Clayey" which is not a valid ProjectInputs Pydantic Literal,
+      // causing a silent 422 validation error on every prediction call.
+      const VALID_SOIL_TYPES = new Set(['Clay', 'Sandy', 'Loamy', 'Rocky', 'Black Cotton']);
+      const sanitizeSoilType = (raw) => {
+        if (!raw || !VALID_SOIL_TYPES.has(raw)) return 'Loamy';
+        return raw;
+      };
+
       const mergedSpecs = {
         ...specs,
         district: data.location || specs.district,
         ...dbDetails,
+        // Explicit overrides to reconcile dual field names across BuildingDetails / ProjectInputs
         built_up_area_sqft: dbDetails.built_up_area_sqft || dbDetails.total_built_up_area_sqft || specs.built_up_area_sqft,
         total_built_up_area_sqft: dbDetails.built_up_area_sqft || dbDetails.total_built_up_area_sqft || specs.total_built_up_area_sqft,
         floors: dbDetails.floors || dbDetails.number_of_floors || specs.floors,
@@ -244,6 +255,8 @@ export default function ArchitectDashboard() {
         bathrooms_count: dbDetails.bathrooms || dbDetails.bathrooms_count || specs.bathrooms_count,
         parking: dbDetails.parking ?? dbDetails.parking_bays ?? specs.parking,
         parking_bays: dbDetails.parking ?? dbDetails.parking_bays ?? specs.parking_bays,
+        // Always sanitize soil_type — legacy records have "Medium / Clayey" which fails Pydantic validation
+        soil_type: sanitizeSoilType(dbDetails.soil_type || specs.soil_type),
       };
       setSpecs(mergedSpecs);
 
@@ -267,6 +280,7 @@ export default function ArchitectDashboard() {
 
   useEffect(() => {
     if (projectId) loadProject();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [projectId]);
 
   // Sync bedrooms (navbar style)
@@ -400,6 +414,7 @@ export default function ArchitectDashboard() {
   const runPrediction = async (currentSpecs, location, saveToDb = true) => {
     try {
       setPredicting(true);
+      setPredictionError(''); // clear any previous prediction error
       const loc = location || currentSpecs.district || project?.location || 'Chennai';
       const payload = {
         project_id: projectId,
@@ -472,7 +487,14 @@ export default function ArchitectDashboard() {
         });
       }
     } catch (err) {
-      console.warn('Prediction warning:', err.message);
+      console.error('[ArchitectDashboard] Prediction failed:', err);
+      // Surface the error visibly so the user knows the estimate didn't run,
+      // rather than silently falling back to hardcoded placeholder values.
+      setEstimateData(null);
+      const userMsg = err?.message?.includes('422')
+        ? 'Validation error: one or more building specifications are invalid. Please review your inputs and try again.'
+        : `Prediction failed: ${err?.message || 'Unknown error'}. Please check that the backend server is running.`;
+      setPredictionError(userMsg);
     } finally {
       setPredicting(false);
     }
@@ -608,7 +630,7 @@ export default function ArchitectDashboard() {
     return (
       <div className="min-h-screen p-8 text-center" style={{ background: 'var(--bg-base)' }}>
         <div className="max-w-md mx-auto bg-white p-8 rounded-2xl border shadow-sm">
-          <div className="text-3xl mb-3">⚠️</div>
+          <div className="text-3xl mb-3 flex justify-center"><AlertTriangle size={36} className="text-amber-500" /></div>
           <h2 className="text-lg font-bold text-gray-800 mb-2">Project Not Available</h2>
           <p className="text-sm text-gray-600 mb-4">{error || 'Project data could not be retrieved.'}</p>
           <Link to="/projects" className="px-4 py-2 rounded-xl text-white text-xs font-bold" style={{ background: 'var(--green-deep)' }}>
@@ -653,7 +675,7 @@ export default function ArchitectDashboard() {
                 </span>
               </div>
               <p className="text-xs text-gray-500">
-                👤 Client: <span className="font-semibold text-gray-700">{project.client_name}</span> • 📍 {project.location} • 🏛️ {project.architect_name}
+                <span className="inline-flex items-center gap-1"><User size={12} /> {project.client_name}</span> • <span className="inline-flex items-center gap-1"><MapPin size={12} /> {project.location}</span> • <span className="inline-flex items-center gap-1"><Building2 size={12} /> {project.architect_name}</span>
               </p>
             </div>
           </div>
@@ -681,7 +703,7 @@ export default function ArchitectDashboard() {
               className="px-3 py-1.5 rounded-lg text-xs font-semibold text-red-600 hover:bg-red-50 border border-red-200 transition-colors"
               title="Delete Project"
             >
-              🗑️ Delete
+              <Trash2 size={14} className="inline mr-1" /> Delete
             </button>
           </div>
         </div>
@@ -696,7 +718,7 @@ export default function ArchitectDashboard() {
                 : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
             }`}
           >
-            <span>📐</span>
+            <Ruler size={14} />
             <span>1. Specifications, Cost &amp; Material Prediction</span>
           </button>
 
@@ -708,7 +730,7 @@ export default function ArchitectDashboard() {
                 : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
             }`}
           >
-            <span>📋</span>
+            <ClipboardList size={14} />
             <span>2. Construction Progress &amp; Inspection Photos</span>
             <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-blue-100 text-blue-800 font-bold ml-1">
               {progressPct}%
@@ -766,7 +788,7 @@ export default function ArchitectDashboard() {
                       }}
                     >
                       {TAMIL_NADU_DISTRICTS.map((d) => (
-                        <option key={d} value={d}>📍 {d}</option>
+                        <option key={d} value={d}>{d}</option>
                       ))}
                     </select>
                   </Field>
@@ -784,11 +806,11 @@ export default function ArchitectDashboard() {
                         color: 'var(--green-deep)',
                       }}
                     >
-                      <option value="Individual Villa">🏡 Individual Villa / Bungalow</option>
-                      <option value="Apartment">🏢 Apartment / Flat</option>
-                      <option value="Independent House">🏠 Independent House (Single/Multi-story)</option>
-                      <option value="Duplex House">🏘️ Duplex House</option>
-                      <option value="Row House">🧱 Row House / Gated Community</option>
+                      <option value="Individual Villa">Individual Villa / Bungalow</option>
+                      <option value="Apartment">Apartment / Flat</option>
+                      <option value="Independent House">Independent House (Single/Multi-story)</option>
+                      <option value="Duplex House">Duplex House</option>
+                      <option value="Row House">Row House / Gated Community</option>
                     </select>
                   </Field>
                 </div>
@@ -890,7 +912,7 @@ export default function ArchitectDashboard() {
                   >
                     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
                       <div className="flex items-center gap-2">
-                        <span className="text-xl">🛏️</span>
+                        <span className="text-xl text-[#1A4D2E]"><Bed size={20} /></span>
                         <div>
                           <h3 className="text-sm font-bold text-[#1A4D2E]">Bedroom Dimensions &amp; Sizing</h3>
                           <p className="text-xs text-[#7A8C6E]">Select standard room dimensions or customize length &amp; width.</p>
@@ -981,7 +1003,7 @@ export default function ArchitectDashboard() {
                   >
                     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
                       <div className="flex items-center gap-2">
-                        <span className="text-xl">🍳</span>
+                        <span className="text-xl text-[#1A4D2E]"><Utensils size={20} /></span>
                         <div>
                           <h3 className="text-sm font-bold text-[#1A4D2E]">Kitchen Dimensions &amp; Sizing</h3>
                           <p className="text-xs text-[#7A8C6E]">Choose kitchen sizes for exact plumbing lines &amp; layout planning.</p>
@@ -1118,7 +1140,7 @@ export default function ArchitectDashboard() {
                     className="inline-flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-bold text-white shadow-md hover:shadow-lg active:scale-95 transition-all disabled:opacity-50 cursor-pointer"
                     style={{ background: 'linear-gradient(135deg, var(--rust), #B23B0E)' }}
                   >
-                    <span>{predicting ? '⏳' : '⚡'}</span>
+                    {predicting ? <div className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" /> : <Zap size={14} />}
                     <span>{predicting ? 'Predicting...' : 'Quick Predict Cost'}</span>
                   </button>
 
@@ -1267,7 +1289,7 @@ export default function ArchitectDashboard() {
                         Predicting Cost &amp; Materials…
                       </>
                     ) : (
-                      <span>⚡ Predict Cost &amp; Material Quantity →</span>
+                      <span className="inline-flex items-center gap-1.5"><Zap size={14} /> Predict Cost &amp; Material Quantity →</span>
                     )}
                   </button>
                 </div>
@@ -1285,10 +1307,32 @@ export default function ArchitectDashboard() {
               </div>
             )}
 
+            {/* ── Prediction Error Banner ── */}
+            {!predicting && predictionError && (
+              <div className="bg-red-50 border border-red-200 rounded-2xl p-5 flex items-start gap-3">
+                <div className="text-red-500 mt-0.5 flex-shrink-0">
+                  <svg width="18" height="18" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd"/>
+                  </svg>
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-semibold text-red-800 mb-1">Prediction Failed</p>
+                  <p className="text-xs text-red-700">{predictionError}</p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setPredictionError('')}
+                  className="text-red-400 hover:text-red-600 text-sm font-bold flex-shrink-0"
+                >
+                  <X size={16} />
+                </button>
+              </div>
+            )}
+
             {/* ── Ready to Predict Placeholder ── */}
-            {!predicting && !hasPrediction && (
+            {!predicting && !hasPrediction && !predictionError && (
               <div className="bg-white rounded-2xl border p-10 text-center shadow-sm">
-                <div className="text-4xl mb-3">⚡</div>
+                <div className="text-4xl mb-3 flex justify-center"><Zap size={36} className="text-emerald-700" /></div>
                 <h3 className="text-lg font-bold mb-1" style={{ color: 'var(--green-deep)' }}>Ready to Predict</h3>
                 <p className="text-sm text-gray-500">
                   Configure your building specifications above and click <strong>Predict Cost &amp; Material Quantity</strong>.
@@ -1306,13 +1350,18 @@ export default function ArchitectDashboard() {
                   <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b pb-4 mb-5">
                     <div>
                       <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800 mb-1">
-                        <span>💰</span> Phase 1 &amp; Phase 2 ML Predictions
+                        <DollarSign size={14} /> Phase 1 &amp; Phase 2 ML Predictions
                       </div>
                       <h3 className="text-2xl font-extrabold text-gray-900 mt-1">
-                        ₹ {estimateData?.total_cost_inr?.toLocaleString('en-IN') || '4,850,000'}
+                        ₹ {estimateData?.breakdown?.total_cost
+                          ? Math.round(estimateData.breakdown.total_cost).toLocaleString('en-IN')
+                          : '—'}
                       </h3>
                       <p className="text-xs text-gray-500">
-                        Total Project Cost • Rate: ₹ {estimateData?.cost_per_sqft_inr || 2020} / sq.ft
+                        Total Project Cost • Rate: ₹{' '}
+                        {estimateData?.breakdown?.total_cost && estimateData?.inputs?.built_up_area_sqft
+                          ? Math.round(estimateData.breakdown.total_cost / estimateData.inputs.built_up_area_sqft).toLocaleString('en-IN')
+                          : '—'} / sq.ft
                       </p>
                     </div>
 
@@ -1346,17 +1395,18 @@ export default function ArchitectDashboard() {
                   </h4>
                   <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
                     {[
-                      { name: 'Cement', qty: estimateData?.quantities?.cement_bags || 550, unit: 'Bags', icon: '🧱' },
-                      { name: 'Steel / Rebar', qty: estimateData?.quantities?.steel_tons || 4.6, unit: 'Tonnes', icon: '🏗️' },
-                      { name: 'Bricks / Blocks', qty: estimateData?.quantities?.bricks_pieces || 13200, unit: 'Pieces', icon: '🏛️' },
-                      { name: 'Sand (M-Sand)', qty: estimateData?.quantities?.sand_cft || 1620, unit: 'Cu.Ft', icon: '🏖️' },
-                      { name: 'Coarse Aggregate', qty: estimateData?.quantities?.aggregate_cft || 2050, unit: 'Cu.Ft', icon: '🪨' },
+                      { name: 'Cement', qty: estimateData?.quantities?.ml?.cement_bags, unit: 'Bags' },
+                      { name: 'Steel / Rebar', qty: estimateData?.quantities?.ml?.steel_tons, unit: 'Tonnes' },
+                      { name: 'Bricks / Blocks', qty: estimateData?.quantities?.ml?.brick_count, unit: 'Pieces' },
+                      { name: 'Sand (M-Sand)', qty: estimateData?.quantities?.ml?.sand_tons
+                          ? Math.round(estimateData.quantities.ml.sand_tons * 25) : undefined, unit: 'Cu.Ft' },
+                      { name: 'Coarse Aggregate', qty: estimateData?.quantities?.ml?.aggregate_tons
+                          ? Math.round(estimateData.quantities.ml.aggregate_tons * 25) : undefined, unit: 'Cu.Ft' },
                     ].map(mat => (
                       <div key={mat.name} className="p-3.5 rounded-xl border bg-gray-50">
-                        <span className="text-xl block mb-1">{mat.icon}</span>
                         <span className="text-xs font-bold text-gray-700 block">{mat.name}</span>
                         <span className="text-lg font-extrabold text-gray-900 block my-0.5">
-                          {typeof mat.qty === 'number' ? mat.qty.toLocaleString('en-IN') : mat.qty}
+                          {mat.qty != null ? (typeof mat.qty === 'number' ? mat.qty.toLocaleString('en-IN') : mat.qty) : '—'}
                         </span>
                         <span className="text-[10px] text-gray-500">{mat.unit}</span>
                       </div>
@@ -1375,10 +1425,16 @@ export default function ArchitectDashboard() {
                     </div>
                     <div className="text-right">
                       <span className="text-lg font-extrabold text-blue-700 block">
-                        {carbonData?.total_carbon_footprint_tco2e || '52.4'} tCO₂e
+                        {carbonData?.total_carbon_tons != null
+                          ? `${carbonData.total_carbon_tons.toFixed(1)} tCO₂e`
+                          : '—'}
                       </span>
                       <span className="text-xs text-gray-500">
-                        Intensity: {carbonData?.carbon_intensity_kgco2e_per_sqft || '27.8'} kgCO₂e/sq.ft (Baseline: 36.0)
+                        Intensity:{' '}
+                        {carbonData?.carbon_intensity_kg_per_sqft != null
+                          ? `${carbonData.carbon_intensity_kg_per_sqft.toFixed(1)} kgCO₂e/sq.ft`
+                          : '—'}{' '}
+                        (Baseline: 36.0)
                       </span>
                     </div>
                   </div>
@@ -1394,19 +1450,29 @@ export default function ArchitectDashboard() {
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-gray-100">
-                        {[
-                          { name: 'Cement (PPC)', qty: '550 Bags', tco2e: 13.5, note: 'Low carbon blended cement' },
-                          { name: 'Structural Steel', qty: '4.6 Tonnes', tco2e: 11.7, note: 'TMT thermo-mechanically treated' },
-                          { name: specs.wall_material, qty: '13,200 Pcs', tco2e: 4.2, note: 'Masonry wall envelope' },
-                          { name: 'Fine & Coarse Aggregates', qty: '3,670 Cu.Ft', tco2e: 5.6, note: 'Quarried regional aggregates' },
-                        ].map(r => (
-                          <tr key={r.name}>
-                            <td className="py-2.5 px-3 font-semibold text-gray-800">{r.name}</td>
-                            <td className="py-2.5 px-3 text-gray-600">{r.qty}</td>
-                            <td className="py-2.5 px-3 font-bold text-gray-900">{r.tco2e} tCO₂e</td>
-                            <td className="py-2.5 px-3 text-emerald-700 font-medium">{r.note}</td>
-                          </tr>
-                        ))}
+                        {carbonData?.materials?.length > 0
+                          ? carbonData.materials.slice(0, 6).map(r => (
+                            <tr key={r.material_name}>
+                              <td className="py-2.5 px-3 font-semibold text-gray-800">{r.material_name}</td>
+                              <td className="py-2.5 px-3 text-gray-600">
+                                {r.quantity != null ? `${r.quantity.toLocaleString('en-IN')} ${r.unit}` : '—'}
+                              </td>
+                              <td className="py-2.5 px-3 font-bold text-gray-900">
+                                {r.carbon_emission_tons != null ? r.carbon_emission_tons.toFixed(1) : '—'} tCO₂e
+                              </td>
+                              <td className="py-2.5 px-3 text-emerald-700 font-medium">
+                                {r.green_alternative || 'Standard specification'}
+                              </td>
+                            </tr>
+                          ))
+                          : (
+                            <tr>
+                              <td colSpan={4} className="py-4 px-3 text-center text-gray-400 italic">
+                                Run prediction to see per-material carbon breakdown
+                              </td>
+                            </tr>
+                          )
+                        }
                       </tbody>
                     </table>
                   </div>
@@ -1417,16 +1483,18 @@ export default function ArchitectDashboard() {
                   <div className="flex items-center justify-between border-b pb-3 mb-4">
                     <div>
                       <div className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-50 text-amber-800 mb-1">
-                        <span>♻️</span> CPWD • BMTPC • NICMAR Standards
+                        <Recycle size={14} /> CPWD • BMTPC • NICMAR Standards
                       </div>
                       <h3 className="text-base font-bold text-gray-900">Job-Site Material Wastage &amp; Financial Impact</h3>
                     </div>
                     <div className="text-right">
                       <span className="text-lg font-extrabold text-red-600 block">
-                        ₹ {wasteData?.total_financial_loss_inr?.toLocaleString('en-IN') || '41,500'}
+                        {wasteData?.total_financial_loss_inr != null
+                          ? `₹ ${wasteData.total_financial_loss_inr.toLocaleString('en-IN')}`
+                          : '—'}
                       </span>
                       <span className="text-xs text-gray-500">
-                        Total Wastage Loss ({wasteData?.average_waste_percent || '4.8'}% avg site waste)
+                        Total Wastage Loss ({wasteData?.average_waste_percent != null ? `${wasteData.average_waste_percent}%` : '—'} avg site waste)
                       </span>
                     </div>
                   </div>
@@ -1466,11 +1534,12 @@ export default function ArchitectDashboard() {
                   {/* Reuse Suggestions with Structural Warning */}
                   <div className="bg-white rounded-2xl border p-6 shadow-sm">
                     <div className="flex items-center gap-2 mb-3">
-                      <span className="text-lg">🔄</span>
+                      <RefreshCw size={18} className="text-emerald-800" />
                       <h3 className="text-base font-bold text-gray-900">Safe Material Reuse Suggestions</h3>
                     </div>
-                    <div className="p-3 rounded-xl bg-amber-50 border border-amber-300 text-[11px] text-amber-900 mb-4 font-semibold">
-                      ⚠️ Never reuse rebar cut-offs or recycled rubble in primary structural columns, beams, or high-stress foundations.
+                    <div className="p-3 rounded-xl bg-amber-50 border border-amber-300 text-[11px] text-amber-900 mb-4 font-semibold flex items-start gap-1.5">
+                      <AlertTriangle size={16} className="shrink-0 text-amber-600 mt-0.5" />
+                      <span>Never reuse rebar cut-offs or recycled rubble in primary structural columns, beams, or high-stress foundations.</span>
                     </div>
                     <div className="space-y-3 text-xs">
                       {(reuseData?.recommendations?.slice(0, 3) || []).map(r => (
@@ -1487,7 +1556,7 @@ export default function ArchitectDashboard() {
                   <div className="bg-white rounded-2xl border p-6 shadow-sm flex flex-col justify-between">
                     <div>
                       <div className="flex items-center gap-2 mb-3">
-                        <span className="text-lg">💡</span>
+                        <Lightbulb size={18} className="text-amber-500" />
                         <h3 className="text-base font-bold text-gray-900">Low-Carbon Material Suggestions</h3>
                       </div>
                       <div className="space-y-2.5 text-xs">
@@ -1509,11 +1578,13 @@ export default function ArchitectDashboard() {
                     {/* Sustainability Score Gauge */}
                     <div className="mt-4 pt-4 border-t flex items-center justify-between">
                       <div className="flex items-center gap-4">
-                        <SustainabilityScoreRing score={sustainabilityData?.score || 72} size={65} strokeWidth={7} />
+                        <SustainabilityScoreRing score={sustainabilityData?.score ?? 0} size={65} strokeWidth={7} />
                         <div>
                           <span className="text-[10px] uppercase font-bold text-gray-400 block">Sustainability Score</span>
                           <span className="text-lg font-extrabold text-emerald-800">
-                            {sustainabilityData?.score || 72}/100 • Grade {sustainabilityData?.grade || 'Good'}
+                            {sustainabilityData?.score != null
+                              ? `${sustainabilityData.score}/100 • Grade ${sustainabilityData.grade || 'N/A'}`
+                              : 'Run prediction to calculate'}
                           </span>
                         </div>
                       </div>
@@ -1568,7 +1639,7 @@ export default function ArchitectDashboard() {
                             isCompleted ? 'bg-emerald-600 text-white' :
                             isInProg ? 'bg-blue-600 text-white' : 'bg-gray-300 text-gray-700'
                           }`}>
-                            {isCompleted ? '✓' : stage.order}
+                            {isCompleted ? <Check size={14} /> : stage.order}
                           </span>
                           <div>
                             <h4 className="text-sm font-bold text-gray-900">{stage.stage_name}</h4>
@@ -1606,8 +1677,8 @@ export default function ArchitectDashboard() {
                             alt="Completion"
                             className="w-12 h-12 object-cover rounded-md"
                           />
-                          <span className="text-[11px] font-semibold text-emerald-800">
-                            ✓ Verified Completion Photo Attached
+                          <span className="text-[11px] font-semibold text-emerald-800 inline-flex items-center gap-1">
+                            <Check size={14} /> Verified Completion Photo Attached
                           </span>
                         </div>
                       )}
@@ -1616,8 +1687,8 @@ export default function ArchitectDashboard() {
                       {isUpdatingThis && (
                         <div className="mt-4 ml-10 p-4 rounded-xl bg-white border border-emerald-300 shadow-sm space-y-3">
                           <div className="flex items-center justify-between">
-                            <span className="text-xs font-bold text-gray-800">
-                              📷 Upload Task Completion Photo for {stage.stage_name}
+                            <span className="text-xs font-bold text-gray-800 inline-flex items-center gap-1">
+                              <Camera size={14} /> Upload Task Completion Photo for {stage.stage_name}
                             </span>
                             <span className="text-[11px] text-emerald-700 font-semibold">Will set progress to 100%</span>
                           </div>
@@ -1659,7 +1730,7 @@ export default function ArchitectDashboard() {
                               className="px-4 py-1.5 rounded-lg text-xs font-bold text-white shadow transition-transform active:scale-95 disabled:opacity-50"
                               style={{ background: 'var(--green-deep)' }}
                             >
-                              {updatingStage ? 'Saving...' : '✓ Confirm Completed & Upload Photo'}
+                              {updatingStage ? 'Saving...' : 'Confirm Completed & Upload Photo'}
                             </button>
                           </div>
                         </div>
@@ -1673,7 +1744,7 @@ export default function ArchitectDashboard() {
             {/* Custom Process / Milestone Form */}
             <div className="bg-white rounded-2xl border p-6 shadow-sm">
               <div className="flex items-center gap-2 mb-1">
-                <span className="text-lg">⚙️</span>
+                <Settings size={18} className="text-emerald-800" />
                 <h3 className="text-base font-bold text-gray-900">Add Custom Phase / Process Milestone</h3>
               </div>
               <p className="text-xs text-gray-500 mb-4">
@@ -1742,7 +1813,7 @@ export default function ArchitectDashboard() {
 
               {siteImages.length === 0 ? (
                 <div className="text-center py-12 text-gray-400 text-xs">
-                  <span className="text-3xl block mb-2">📸</span>
+                  <Camera size={36} className="mx-auto mb-2 text-gray-400" />
                   No photos uploaded yet. Complete a milestone above or add a custom task to store verification photos.
                 </div>
               ) : (

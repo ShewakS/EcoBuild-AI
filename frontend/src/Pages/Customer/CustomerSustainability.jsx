@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { getCustomerDashboard, getCustomerSustainability, getCustomerCarbon } from '../../Assets/api';
+import { AlertTriangle, Star, Cloud, Leaf, Check } from 'lucide-react';
 
 export default function CustomerSustainability() {
   const [sustData, setSustData] = useState(null);
@@ -35,7 +36,7 @@ export default function CustomerSustainability() {
   }
 
   if (error) {
-    return <div className="login-alert-error"><span>⚠</span> {error}</div>;
+    return <div className="login-alert-error"><AlertTriangle size={16} /> {error}</div>;
   }
 
   const score = sustData?.sustainability_score || 82;
@@ -69,8 +70,8 @@ export default function CustomerSustainability() {
           <div className="admin-kpi-value" style={{ color: '#166534' }}>
             {score} / 100
           </div>
-          <div className="admin-kpi-sub" style={{ color: '#15803d' }}>
-            ★ {tier} Rating (Top 15% in Region)
+          <div className="admin-kpi-sub inline-flex items-center gap-1" style={{ color: '#15803d' }}>
+            <Star size={12} fill="#15803d" /> {tier} Rating (Top 15% in Region)
           </div>
         </div>
 
@@ -97,7 +98,7 @@ export default function CustomerSustainability() {
 
       {/* Carbon Contributors */}
       <div className="customer-card">
-        <h3 className="customer-card-title"><span>💨</span> Embodied Carbon by Construction Material</h3>
+        <h3 className="customer-card-title flex items-center gap-1.5"><Cloud size={18} className="text-emerald-800" /> Embodied Carbon by Construction Material</h3>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
           {Array.isArray(breakdown) ? breakdown.map((item, idx) => {
             const matName = item.material || item.name || `Material ${idx + 1}`;
@@ -127,7 +128,7 @@ export default function CustomerSustainability() {
 
       {/* Eco-Friendly Material Substitutions Applied */}
       <div className="customer-card">
-        <h3 className="customer-card-title"><span>🌱</span> Eco-Friendly Alternatives Recommended by Architect</h3>
+        <h3 className="customer-card-title flex items-center gap-1.5"><Leaf size={18} className="text-emerald-800" /> Eco-Friendly Alternatives Recommended by Architect</h3>
         <div className="admin-table-container">
           <table className="admin-table">
             <thead>
@@ -145,8 +146,8 @@ export default function CustomerSustainability() {
                   <td><strong>{alt.suggested}</strong></td>
                   <td><span style={{ color: '#166534', fontWeight: 600 }}>{alt.benefit}</span></td>
                   <td>
-                    <span style={{ background: '#dcfce7', color: '#166534', padding: '3px 8px', borderRadius: '4px', fontSize: '0.78rem', fontWeight: 700 }}>
-                      ✓ {alt.status || 'Active'}
+                    <span className="inline-flex items-center gap-1" style={{ background: '#dcfce7', color: '#166534', padding: '3px 8px', borderRadius: '4px', fontSize: '0.78rem', fontWeight: 700 }}>
+                      <Check size={12} /> {alt.status || 'Active'}
                     </span>
                   </td>
                 </tr>

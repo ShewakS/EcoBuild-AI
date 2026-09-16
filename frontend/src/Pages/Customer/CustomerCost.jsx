@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { getCustomerDashboard, getCustomerCost } from '../../Assets/api';
+import { AlertTriangle, ShieldCheck } from 'lucide-react';
 
 export default function CustomerCost() {
   const [costData, setCostData] = useState(null);
@@ -29,7 +30,7 @@ export default function CustomerCost() {
   }
 
   if (error) {
-    return <div className="login-alert-error"><span>⚠</span> {error}</div>;
+    return <div className="login-alert-error"><AlertTriangle size={16} /> {error}</div>;
   }
 
   const total = costData?.predicted_cost_inr || 3850000;
@@ -111,7 +112,7 @@ export default function CustomerCost() {
 
       {/* Financial Protection Notice */}
       <div className="customer-card">
-        <h3 className="customer-card-title"><span>🛡️</span> Budget Transparency Guarantee</h3>
+        <h3 className="customer-card-title flex items-center gap-1.5"><ShieldCheck size={18} className="text-emerald-700" /> Budget Transparency Guarantee</h3>
         <p style={{ margin: 0, color: '#475569', lineHeight: '1.6', fontSize: '0.92rem' }}>
           EcoBuild AI estimates are synchronized with current prevailing material vendor rates in your municipal region.
           Any revisions to drawings or material grades made by your architect will reflect immediately in this breakdown.

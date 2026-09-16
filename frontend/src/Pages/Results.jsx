@@ -10,6 +10,8 @@ import {
 } from '../Assets/api';
 import SustainabilityScoreRing from '../Components/SustainabilityScoreRing';
 import EcoMaterialRecommendations from '../Components/EcoMaterialRecommendations';
+import CostEstimatorEnhancements from '../Components/CostEstimatorEnhancements';
+import { ClipboardList, HardHat, User, Printer, X, Pin, MapPin, Home, Ruler, Map, Bed, Utensils, Bath, Car, Boxes, Leaf, Sparkles, Sun, Droplets, Bot, Zap, Wrench, Palette, RefreshCw, AlertTriangle, Lightbulb, FileText } from 'lucide-react';
 
 function fmt(n) {
   if (n >= 1_00_00_000) return `₹${(n / 1_00_00_000).toFixed(2)} Cr`;
@@ -113,6 +115,7 @@ export default function Results() {
     getProjectReuse(['Bricks', 'Steel', 'Aggregate', 'Sand', 'Timber'], estimate.estimate_id)
       .then(setReuseData)
       .catch((err) => console.error('Failed to fetch reuse suggestions:', err));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [estimate?.estimate_id, estimate?.inputs?.wall_material]);
 
   const handleApplyRecommendation = async (rec) => {
@@ -162,7 +165,9 @@ export default function Results() {
   if (!estimate || error) {
     return (
       <div className="flex-1 max-w-screen-md mx-auto w-full px-6 py-20 flex flex-col items-center justify-center text-center gap-5">
-        <div className="w-20 h-20 rounded-3xl bg-[#EDE8DC] flex items-center justify-center text-4xl">📋</div>
+        <div className="w-20 h-20 rounded-3xl bg-[#EDE8DC] flex items-center justify-center text-4xl">
+          <ClipboardList size={40} className="text-[#1A4D2E]" />
+        </div>
         <div>
           <h2 className="text-2xl font-extrabold text-[#1A4D2E]">No Estimate Found</h2>
           <p className="text-sm text-[#7A8C6E] mt-1 max-w-md mx-auto">
@@ -223,33 +228,33 @@ export default function Results() {
               <button
                 type="button"
                 onClick={() => setViewMode('builder')}
-                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer inline-flex items-center gap-1 ${
                   viewMode === 'builder'
                     ? 'bg-[#1A4D2E] text-white shadow-xs'
                     : 'text-[#1A4D2E] hover:bg-white/50'
                 }`}
               >
-                👷 Builder View
+                <HardHat size={14} /> Builder View
               </button>
               <button
                 type="button"
                 onClick={() => setViewMode('client')}
-                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer inline-flex items-center gap-1 ${
                   viewMode === 'client'
                     ? 'bg-[#1A4D2E] text-white shadow-xs'
                     : 'text-[#1A4D2E] hover:bg-white/50'
                 }`}
               >
-                👤 Client View
+                <User size={14} /> Client View
               </button>
             </div>
 
             <button
               type="button"
               onClick={() => window.print()}
-              className="px-3.5 py-2 rounded-xl text-xs font-bold border border-[#DDD8CD] bg-white text-[#1A4D2E] hover:bg-[#EDE8DC] transition-all cursor-pointer shadow-xs"
+              className="px-3.5 py-2 rounded-xl text-xs font-bold border border-[#DDD8CD] bg-white text-[#1A4D2E] hover:bg-[#EDE8DC] transition-all cursor-pointer shadow-xs inline-flex items-center gap-1.5"
             >
-              🖨️ PDF
+              <Printer size={14} /> PDF
             </button>
             <Link
               to="/cost-estimation"
@@ -278,7 +283,7 @@ export default function Results() {
               onClick={() => setToast(null)}
               className="text-gray-500 hover:text-gray-800 ml-4 font-extrabold text-sm cursor-pointer"
             >
-              ✕
+              <X size={16} />
             </button>
           </div>
         )}
@@ -289,32 +294,38 @@ export default function Results() {
           style={{ borderColor: 'var(--border)' }}
         >
           <div className="flex items-center justify-between border-b pb-2.5" style={{ borderColor: 'var(--border)' }}>
-            <span className="text-xs font-bold uppercase tracking-wider text-[#1A4D2E]">📌 Selected Project Parameters</span>
+            <span className="text-xs font-bold uppercase tracking-wider text-[#1A4D2E] inline-flex items-center gap-1.5">
+              <Pin size={14} /> Selected Project Parameters
+            </span>
             <span className="text-xs font-semibold text-[#7A8C6E]">{inputs.residential_type} · {inputs.district}</span>
           </div>
           <div className="flex flex-wrap gap-2 pt-1">
             {[
-              { icon: '📍', key: 'District', val: inputs.district },
-              { icon: '🏡', key: 'Type', val: inputs.residential_type },
-              { icon: '📐', key: 'Built-up Area', val: `${inputs.built_up_area_sqft.toLocaleString()} sqft (${inputs.floors} Floor${inputs.floors > 1 ? 's' : ''})` },
-              { icon: '🗺️', key: 'Plot Area', val: `${inputs.plot_area_sqft.toLocaleString()} sqft` },
-              { icon: '🛏️', key: 'Bedrooms', val: `${inputs.bedrooms} (${inputs.room_sizes?.map(r => `${r.name} ${r.length_ft}×${r.width_ft}`).join(', ') || 'Standard'})` },
-              { icon: '🍳', key: 'Kitchens', val: `${inputs.kitchens} (${inputs.kitchen_sizes?.map(k => `${k.name} ${k.length_ft}×${k.width_ft}`).join(', ') || 'Standard'})` },
-              { icon: '🚿', key: 'Bathrooms', val: inputs.bathrooms },
-              { icon: '🚗', key: 'Parking', val: `${inputs.parking} Bay${inputs.parking > 1 ? 's' : ''}` },
-              { icon: '🧱', key: 'Wall Material', val: inputs.wall_material },
-              { icon: '🌱', key: 'Soil & Foundation', val: `${inputs.soil_type} · ${inputs.foundation_type} (${inputs.foundation_depth_ft} ft)` },
-              { icon: '✨', key: 'Quality', val: `${inputs.finish_quality} (${inputs.flooring})` },
-            ].map(({ icon, key, val }) => (
-              <span key={key} className="px-3 py-1.5 rounded-xl bg-[#EDE8DC] text-xs font-semibold text-[#1A4D2E]">
-                {icon} <strong>{key}:</strong> {val}
+              { Icon: MapPin, key: 'District', val: inputs.district },
+              { Icon: Home, key: 'Type', val: inputs.residential_type },
+              { Icon: Ruler, key: 'Built-up Area', val: `${inputs.built_up_area_sqft.toLocaleString()} sqft (${inputs.floors} Floor${inputs.floors > 1 ? 's' : ''})` },
+              { Icon: Map, key: 'Plot Area', val: `${inputs.plot_area_sqft.toLocaleString()} sqft` },
+              { Icon: Bed, key: 'Bedrooms', val: `${inputs.bedrooms} (${inputs.room_sizes?.map(r => `${r.name} ${r.length_ft}×${r.width_ft}`).join(', ') || 'Standard'})` },
+              { Icon: Utensils, key: 'Kitchens', val: `${inputs.kitchens} (${inputs.kitchen_sizes?.map(k => `${k.name} ${k.length_ft}×${k.width_ft}`).join(', ') || 'Standard'})` },
+              { Icon: Bath, key: 'Bathrooms', val: inputs.bathrooms },
+              { Icon: Car, key: 'Parking', val: `${inputs.parking} Bay${inputs.parking > 1 ? 's' : ''}` },
+              { Icon: Boxes, key: 'Wall Material', val: inputs.wall_material },
+              { Icon: Leaf, key: 'Soil & Foundation', val: `${inputs.soil_type} · ${inputs.foundation_type} (${inputs.foundation_depth_ft} ft)` },
+              { Icon: Sparkles, key: 'Quality', val: `${inputs.finish_quality} (${inputs.flooring})` },
+            ].map(({ Icon, key, val }) => (
+              <span key={key} className="px-3 py-1.5 rounded-xl bg-[#EDE8DC] text-xs font-semibold text-[#1A4D2E] inline-flex items-center gap-1.5">
+                <Icon size={14} /> <strong>{key}:</strong> {val}
               </span>
             ))}
             {inputs.solar_panels && (
-              <span className="px-3 py-1.5 rounded-xl bg-amber-100 border border-amber-300 text-xs font-bold text-amber-900">☀️ Solar Panels</span>
+              <span className="px-3 py-1.5 rounded-xl bg-amber-100 border border-amber-300 text-xs font-bold text-amber-900 inline-flex items-center gap-1.5">
+                <Sun size={14} /> Solar Panels
+              </span>
             )}
             {inputs.rainwater_harvesting && (
-              <span className="px-3 py-1.5 rounded-xl bg-blue-100 border border-blue-300 text-xs font-bold text-blue-900">💧 Rainwater Harvesting</span>
+              <span className="px-3 py-1.5 rounded-xl bg-blue-100 border border-blue-300 text-xs font-bold text-blue-900 inline-flex items-center gap-1.5">
+                <Droplets size={14} /> Rainwater Harvesting
+              </span>
             )}
           </div>
         </div>
@@ -332,7 +343,7 @@ export default function Results() {
               <div className="p-6 sm:p-8 bg-[#1A4D2E] text-white flex flex-col md:flex-row md:items-center justify-between gap-6">
                 <div>
                   <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-extrabold uppercase tracking-wider mb-2 bg-[#D4541A] text-white">
-                    🤖 Phase 1 · ML Cost Model Prediction
+                    <Bot size={14} /> Phase 1 · ML Cost Model Prediction
                   </div>
                   <div className="text-xs text-white/70 uppercase tracking-widest font-semibold">Total Estimated Construction Cost</div>
                   <div className="text-4xl sm:text-5xl font-extrabold text-white mt-1 tabular-nums">{fmt(breakdown.total_cost)}</div>
@@ -358,13 +369,13 @@ export default function Results() {
                 <h3 className="text-sm font-bold uppercase tracking-wider text-[#1A4D2E]">Estimated Cost Breakdown Across Categories</h3>
                 <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
                   {[
-                    { label: 'Materials (52%)', val: breakdown.material_cost, icon: '🧱', desc: 'Cement, Steel, Bricks, Sand & Aggregates' },
-                    { label: 'Labour (22%)', val: breakdown.labour_cost, icon: '👷', desc: 'Masons, Bar-benders, Helpers & Carpenters' },
-                    { label: 'Electrical (6%)', val: breakdown.electrical_cost, icon: '⚡', desc: 'Point wiring, switches & conduit lines' },
-                    { label: 'Plumbing (5%)', val: breakdown.plumbing_cost, icon: '🔧', desc: 'Piping, sanitary ware & bathroom fittings' },
-                    { label: 'Painting (5%)', val: breakdown.painting_cost, icon: '🎨', desc: 'Interior emulsion & exterior weather coat' },
-                    { label: 'Finishing (6%)', val: breakdown.finishing_cost, icon: '✨', desc: 'Vitrified/Granite flooring & door frames' },
-                    { label: 'Approvals & Overheads (4%)', val: breakdown.approval_misc_cost, icon: '📋', desc: 'Statutory planning fees & contingencies' },
+                    { label: 'Materials (52%)', val: breakdown.material_cost, Icon: Boxes, desc: 'Cement, Steel, Bricks, Sand & Aggregates' },
+                    { label: 'Labour (22%)', val: breakdown.labour_cost, Icon: HardHat, desc: 'Masons, Bar-benders, Helpers & Carpenters' },
+                    { label: 'Electrical (6%)', val: breakdown.electrical_cost, Icon: Zap, desc: 'Point wiring, switches & conduit lines' },
+                    { label: 'Plumbing (5%)', val: breakdown.plumbing_cost, Icon: Wrench, desc: 'Piping, sanitary ware & bathroom fittings' },
+                    { label: 'Painting (5%)', val: breakdown.painting_cost, Icon: Palette, desc: 'Interior emulsion & exterior weather coat' },
+                    { label: 'Finishing (6%)', val: breakdown.finishing_cost, Icon: Sparkles, desc: 'Vitrified/Granite flooring & door frames' },
+                    { label: 'Approvals & Overheads (4%)', val: breakdown.approval_misc_cost, Icon: ClipboardList, desc: 'Statutory planning fees & contingencies' },
                   ].map((item) => {
                     const pct = ((item.val / breakdown.total_cost) * 100).toFixed(1);
                     return (
@@ -372,7 +383,7 @@ export default function Results() {
                         <div>
                           <div className="flex items-center justify-between text-xs font-semibold text-[#7A8C6E]">
                             <span className="flex items-center gap-1.5">
-                              <span>{item.icon}</span>
+                              <item.Icon size={14} />
                               <span>{item.label}</span>
                             </span>
                             <span className="font-bold text-[#1A4D2E]">{pct}%</span>
@@ -387,6 +398,9 @@ export default function Results() {
               </div>
             </div>
 
+            {/* ── SECTION 6: ADVANCED COST ESTIMATOR ENHANCEMENTS SUITE ── */}
+            <CostEstimatorEnhancements estimate={estimate} />
+
             {/* ── CARD 2: PHASE 2 — ML MATERIAL QUANTITY PREDICTION ── */}
             <div
               className="rounded-3xl border overflow-hidden shadow-md bg-white"
@@ -395,7 +409,7 @@ export default function Results() {
               <div className="p-6 sm:p-8 bg-[#2E7D52] text-white flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
                   <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-extrabold uppercase tracking-wider mb-2 bg-emerald-950 text-emerald-300 border border-emerald-600/50">
-                    🤖 Phase 2 · ML Material Quantity Prediction
+                    <Bot size={14} /> Phase 2 · ML Material Quantity Prediction
                   </div>
                   <h2 className="text-2xl font-extrabold text-white">Machine Learning Quantity Estimator</h2>
                   <p className="text-xs text-emerald-100 mt-0.5">
@@ -412,7 +426,7 @@ export default function Results() {
                 <div className="p-5 rounded-2xl bg-white border border-[#DDD8CD] shadow-xs flex flex-col gap-2">
                   <div className="flex items-center justify-between">
                     <span className="text-xs font-bold uppercase text-[#7A8C6E]">Portland Cement</span>
-                    <span className="text-lg">🏗️</span>
+                    <Boxes size={18} className="text-[#1A4D2E]" />
                   </div>
                   <div className="text-2xl font-extrabold text-[#1A4D2E] tabular-nums">
                     {quantities.ml.cement_bags.toLocaleString()} <span className="text-sm font-semibold text-[#7A8C6E]">Bags</span>
@@ -424,7 +438,7 @@ export default function Results() {
                 <div className="p-5 rounded-2xl bg-white border border-[#DDD8CD] shadow-xs flex flex-col gap-2">
                   <div className="flex items-center justify-between">
                     <span className="text-xs font-bold uppercase text-[#7A8C6E]">Reinforcement Steel (TMT)</span>
-                    <span className="text-lg">🔩</span>
+                    <Wrench size={18} className="text-[#1A4D2E]" />
                   </div>
                   <div className="text-2xl font-extrabold text-[#1A4D2E] tabular-nums">
                     {quantities.ml.steel_tons} <span className="text-sm font-semibold text-[#7A8C6E]">Tons</span>
@@ -436,7 +450,7 @@ export default function Results() {
                 <div className="p-5 rounded-2xl bg-white border border-[#DDD8CD] shadow-xs flex flex-col gap-2">
                   <div className="flex items-center justify-between">
                     <span className="text-xs font-bold uppercase text-[#7A8C6E]">Masonry Wall Units</span>
-                    <span className="text-lg">🧱</span>
+                    <Boxes size={18} className="text-[#1A4D2E]" />
                   </div>
                   <div className="text-2xl font-extrabold text-[#1A4D2E] tabular-nums">
                     {quantities.ml.brick_count.toLocaleString()} <span className="text-sm font-semibold text-[#7A8C6E]">Units</span>
@@ -448,7 +462,7 @@ export default function Results() {
                 <div className="p-5 rounded-2xl bg-white border border-[#DDD8CD] shadow-xs flex flex-col gap-2">
                   <div className="flex items-center justify-between">
                     <span className="text-xs font-bold uppercase text-[#7A8C6E]">M-Sand (Fine Aggregate)</span>
-                    <span className="text-lg">🏖️</span>
+                    <Boxes size={18} className="text-[#1A4D2E]" />
                   </div>
                   <div className="text-2xl font-extrabold text-[#1A4D2E] tabular-nums">
                     {quantities.ml.sand_tons} <span className="text-sm font-semibold text-[#7A8C6E]">Tons</span>
@@ -460,7 +474,7 @@ export default function Results() {
                 <div className="p-5 rounded-2xl bg-white border border-[#DDD8CD] shadow-xs flex flex-col gap-2">
                   <div className="flex items-center justify-between">
                     <span className="text-xs font-bold uppercase text-[#7A8C6E]">20mm Coarse Aggregate</span>
-                    <span className="text-lg">🪨</span>
+                    <Boxes size={18} className="text-[#1A4D2E]" />
                   </div>
                   <div className="text-2xl font-extrabold text-[#1A4D2E] tabular-nums">
                     {quantities.ml.aggregate_tons} <span className="text-sm font-semibold text-[#7A8C6E]">Tons</span>
@@ -472,7 +486,7 @@ export default function Results() {
                 <div className="p-5 rounded-2xl bg-white border border-[#DDD8CD] shadow-xs flex flex-col gap-2">
                   <div className="flex items-center justify-between">
                     <span className="text-xs font-bold uppercase text-[#7A8C6E]">Labour Requirement</span>
-                    <span className="text-lg">👷</span>
+                    <HardHat size={18} className="text-[#1A4D2E]" />
                   </div>
                   <div className="text-2xl font-extrabold text-[#1A4D2E] tabular-nums">
                     {quantities.ml.labour_man_days} <span className="text-sm font-semibold text-[#7A8C6E]">Man-days</span>
@@ -482,11 +496,19 @@ export default function Results() {
 
                 {/* Architectural ratios */}
                 <div className="p-5 rounded-2xl bg-[#EDE8DC] border border-[#DDD8CD] shadow-xs flex flex-col gap-1 md:col-span-2 lg:col-span-3">
-                  <span className="text-xs font-bold uppercase text-[#1A4D2E]">📐 Derived Architectural Fixtures &amp; Surface Quantities</span>
+                  <span className="text-xs font-bold uppercase text-[#1A4D2E] inline-flex items-center gap-1.5">
+                    <Ruler size={14} /> Derived Architectural Fixtures &amp; Surface Quantities
+                  </span>
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2">
-                    <div className="text-xs font-medium text-[#4B5945]">⚡ <strong>Electrical Wiring:</strong> {quantities.derived.electrical_points_count} Points</div>
-                    <div className="text-xs font-medium text-[#4B5945]">🔧 <strong>Plumbing Connections:</strong> {quantities.derived.plumbing_fixture_count} Fixtures</div>
-                    <div className="text-xs font-medium text-[#4B5945]">🎨 <strong>Paintable Surface Area:</strong> {quantities.derived.paintable_area_sqft.toLocaleString()} Sq Ft</div>
+                    <div className="text-xs font-medium text-[#4B5945] inline-flex items-center gap-1.5">
+                      <Zap size={14} className="text-amber-600" /> <strong>Electrical Wiring:</strong> {quantities.derived.electrical_points_count} Points
+                    </div>
+                    <div className="text-xs font-medium text-[#4B5945] inline-flex items-center gap-1.5">
+                      <Wrench size={14} className="text-blue-600" /> <strong>Plumbing Connections:</strong> {quantities.derived.plumbing_fixture_count} Fixtures
+                    </div>
+                    <div className="text-xs font-medium text-[#4B5945] inline-flex items-center gap-1.5">
+                      <Palette size={14} className="text-rose-600" /> <strong>Paintable Surface Area:</strong> {quantities.derived.paintable_area_sqft.toLocaleString()} Sq Ft
+                    </div>
                   </div>
                 </div>
               </div>
@@ -501,7 +523,7 @@ export default function Results() {
                 <div className="p-6 sm:p-8 bg-[#0284C7] text-white flex flex-col md:flex-row md:items-center justify-between gap-4">
                   <div>
                     <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-extrabold uppercase tracking-wider mb-2 bg-sky-950 text-cyan-200 border border-cyan-500/50">
-                      🌱 Phase 3 · Embodied Carbon Footprint
+                      <Leaf size={14} /> Phase 3 · Embodied Carbon Footprint
                     </div>
                     <h2 className="text-2xl font-extrabold text-white">IFC Indian Environmental Impact Analysis</h2>
                     <p className="text-xs text-sky-100 mt-0.5">Calculated exclusively for the predicted material quantities of this project.</p>
@@ -521,7 +543,7 @@ export default function Results() {
                   {/* Green rating banner */}
                   <div className="p-4 rounded-2xl bg-emerald-50 border border-emerald-200 flex items-center justify-between flex-wrap gap-2">
                     <div className="flex items-center gap-2">
-                      <span className="text-2xl">🌿</span>
+                      <Leaf size={24} className="text-emerald-700" />
                       <div>
                         <div className="text-xs font-bold text-emerald-900">Green Building Benchmark</div>
                         <div className="text-sm font-extrabold text-emerald-700">{carbon_footprint.green_rating}</div>
@@ -598,7 +620,7 @@ export default function Results() {
                 <div className="lg:col-span-2 rounded-3xl border border-[#DDD8CD] bg-white p-6 sm:p-8 shadow-md flex flex-col justify-between gap-4">
                   <div>
                     <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-extrabold uppercase tracking-wider bg-emerald-100 text-[#1A4D2E] mb-2">
-                      🌿 Phase 4 · Sustainability Rating Engine
+                      <Leaf size={14} /> Phase 4 · Sustainability Rating Engine
                     </div>
                     <h3 className="text-xl font-extrabold text-[#1A4D2E]">0–100 Explainable Sustainability Index</h3>
                     <p className="text-xs text-[#7A8C6E] mt-1 leading-relaxed">
@@ -653,7 +675,7 @@ export default function Results() {
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b pb-4 mb-6" style={{ borderColor: 'var(--border)' }}>
                   <div>
                     <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-extrabold uppercase tracking-wider bg-amber-100 text-amber-900 mb-2">
-                      ♻️ Phase 6 · CPWD • BMTPC • NICMAR Standards
+                      <AlertTriangle size={14} /> Phase 6 · CPWD • BMTPC • NICMAR Standards
                     </div>
                     <h3 className="text-xl font-extrabold text-[#1A4D2E]">Job-Site Material Wastage &amp; Financial Impact</h3>
                     <p className="text-xs text-[#7A8C6E] mt-0.5">
@@ -708,7 +730,7 @@ export default function Results() {
                 style={{ borderColor: 'var(--border)' }}
               >
                 <div className="flex items-center gap-2 mb-2">
-                  <span className="text-xl">🔄</span>
+                  <RefreshCw size={20} className="text-[#1A4D2E]" />
                   <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-extrabold uppercase tracking-wider bg-emerald-100 text-[#1A4D2E]">
                     Phase 7 · Structural Safety &amp; Circular Economy
                   </div>
@@ -719,7 +741,7 @@ export default function Results() {
                 </p>
 
                 <div className="p-3.5 rounded-xl bg-amber-50 border border-amber-300 text-xs text-amber-900 mb-5 font-semibold flex items-center gap-2">
-                  <span>⚠️</span>
+                  <AlertTriangle size={16} className="shrink-0 text-amber-600" />
                   <span>Safety Directive: Never reuse rebar cut-offs or crushed rubble in primary structural columns, beams, or high-stress foundations.</span>
                 </div>
 
@@ -807,8 +829,9 @@ export default function Results() {
                   </div>
                 </div>
 
-                <div className="p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-xs text-emerald-900 leading-relaxed">
-                  🌱 <strong>Green Building Benefits:</strong> Adopting recommended low-carbon materials lowers your embodied carbon footprint, reduces indoor temperatures during Tamil Nadu summers, and qualifies for green building certifications.
+                <div className="p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-xs text-emerald-900 leading-relaxed flex items-center gap-2">
+                  <Leaf size={18} className="text-emerald-700 shrink-0" />
+                  <span><strong>Green Building Benefits:</strong> Adopting recommended low-carbon materials lowers your embodied carbon footprint, reduces indoor temperatures during Tamil Nadu summers, and qualifies for green building certifications.</span>
                 </div>
               </div>
             </div>
@@ -837,18 +860,18 @@ export default function Results() {
           <div className="flex items-center gap-3 w-full sm:w-auto">
             <Link
               to="/recommendations"
-              className="w-full sm:w-auto px-5 py-3 rounded-xl text-sm font-bold border border-[#DDD8CD] bg-white text-[#1A4D2E] hover:bg-[#EDE8DC] transition-all cursor-pointer text-center shadow-xs"
+              className="w-full sm:w-auto px-5 py-3 rounded-xl text-sm font-bold border border-[#DDD8CD] bg-white text-[#1A4D2E] hover:bg-[#EDE8DC] transition-all cursor-pointer text-center shadow-xs inline-flex items-center justify-center gap-1.5"
               style={{ textDecoration: 'none' }}
             >
-              💡 All Material Rules
+              <Lightbulb size={14} /> Eco Recommendations
             </Link>
             <button
               type="button"
               onClick={() => window.print()}
-              className="w-full sm:w-auto px-6 py-3 rounded-xl text-sm font-bold text-white shadow-md hover:shadow-lg transition-all cursor-pointer text-center"
+              className="w-full sm:w-auto px-6 py-3 rounded-xl text-sm font-bold text-white shadow-md hover:shadow-lg transition-all cursor-pointer text-center inline-flex items-center justify-center gap-1.5"
               style={{ background: 'linear-gradient(135deg, #D4541A, var(--rust))' }}
             >
-              📄 Export / Print Report
+              <FileText size={14} /> Export / Print Report
             </button>
           </div>
         </div>

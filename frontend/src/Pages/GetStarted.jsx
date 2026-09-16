@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { Check, X } from 'lucide-react';
 import './GetStarted.css';
 
 const PLANS = [
@@ -125,13 +126,13 @@ export default function GetStarted() {
 
               <ul className="gs-feature-list">
                 {plan.features.map((f) => (
-                  <li key={f} className="gs-feature-item gs-feature-yes">
-                    <span className="gs-feature-check">✓</span> {f}
+                  <li key={f} className="gs-feature-item gs-feature-yes flex items-center gap-1.5">
+                    <Check size={14} className="gs-feature-check text-emerald-600 shrink-0" /> {f}
                   </li>
                 ))}
                 {plan.missing.map((f) => (
-                  <li key={f} className="gs-feature-item gs-feature-no">
-                    <span className="gs-feature-check">✗</span> {f}
+                  <li key={f} className="gs-feature-item gs-feature-no flex items-center gap-1.5">
+                    <X size={14} className="gs-feature-check text-gray-400 shrink-0" /> {f}
                   </li>
                 ))}
               </ul>

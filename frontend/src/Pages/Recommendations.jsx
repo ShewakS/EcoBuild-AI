@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { postEcoRecommendations, postEstimateCost, getEcoRules } from '../Assets/api';
 import SustainabilityScoreRing from '../Components/SustainabilityScoreRing';
 import EcoMaterialRecommendations from '../Components/EcoMaterialRecommendations';
+import { Lightbulb, X, Pin, Boxes, Home, Sparkles, Tag, Sun, Droplets, BarChart3, ArrowRight } from 'lucide-react';
 
 export default function Recommendations() {
   const navigate = useNavigate();
@@ -70,6 +71,7 @@ export default function Recommendations() {
     }
 
     loadData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleApplyRecommendation = async (rec) => {
@@ -124,7 +126,7 @@ export default function Recommendations() {
         <div className="max-w-screen-xl mx-auto px-6 py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div className="flex items-center gap-3">
             <span className="w-10 h-10 rounded-xl flex items-center justify-center text-xl bg-emerald-100 text-[#1A4D2E] shadow-2xs">
-              💡
+              <Lightbulb size={20} />
             </span>
             <div>
               <h1 className="text-lg font-extrabold text-[#1A4D2E]">Eco-Material Recommendations Engine</h1>
@@ -169,7 +171,7 @@ export default function Recommendations() {
               onClick={() => setNotification(null)}
               className="text-gray-500 hover:text-gray-800 ml-4 font-extrabold text-sm"
             >
-              ✕
+              <X size={16} />
             </button>
           </div>
         )}
@@ -180,8 +182,8 @@ export default function Recommendations() {
           style={{ borderColor: 'var(--border)' }}
         >
           <div className="flex items-center justify-between border-b pb-2.5" style={{ borderColor: 'var(--border)' }}>
-            <span className="text-xs font-bold uppercase tracking-wider text-[#1A4D2E]">
-              📌 Evaluated Project Specifications
+            <span className="text-xs font-bold uppercase tracking-wider text-[#1A4D2E] inline-flex items-center gap-1">
+              <Pin size={14} /> Evaluated Project Specifications
             </span>
             <span className="text-xs font-semibold text-[#7A8C6E]">
               {inputs.district}, Tamil Nadu · {inputs.built_up_area_sqft} sqft
@@ -190,15 +192,15 @@ export default function Recommendations() {
 
           <div className="flex flex-wrap gap-2 pt-1">
             {[
-              { label: 'Wall Material', val: inputs.wall_material, icon: '🧱' },
-              { label: 'Roof Type', val: inputs.roof_type, icon: '🏠' },
-              { label: 'Flooring', val: inputs.flooring, icon: '✨' },
-              { label: 'Quality', val: inputs.finish_quality, icon: '🏷️' },
-              { label: 'Solar Panels', val: inputs.solar_panels ? 'Installed (Yes)' : 'None (No)', icon: '☀️' },
-              { label: 'Rainwater Harvesting', val: inputs.rainwater_harvesting ? 'Installed (Yes)' : 'None (No)', icon: '💧' },
-            ].map(({ label, val, icon }) => (
-              <span key={label} className="px-3 py-1.5 rounded-xl bg-[#EDE8DC] text-xs font-semibold text-[#1A4D2E]">
-                {icon} <strong>{label}:</strong> {val}
+              { label: 'Wall Material', val: inputs.wall_material, Icon: Boxes },
+              { label: 'Roof Type', val: inputs.roof_type, Icon: Home },
+              { label: 'Flooring', val: inputs.flooring, Icon: Sparkles },
+              { label: 'Quality', val: inputs.finish_quality, Icon: Tag },
+              { label: 'Solar Panels', val: inputs.solar_panels ? 'Installed (Yes)' : 'None (No)', Icon: Sun },
+              { label: 'Rainwater Harvesting', val: inputs.rainwater_harvesting ? 'Installed (Yes)' : 'None (No)', Icon: Droplets },
+            ].map(({ label, val, Icon }) => (
+              <span key={label} className="px-3 py-1.5 rounded-xl bg-[#EDE8DC] text-xs font-semibold text-[#1A4D2E] inline-flex items-center gap-1.5">
+                <Icon size={14} /> <strong>{label}:</strong> {val}
               </span>
             ))}
           </div>
@@ -213,7 +215,7 @@ export default function Recommendations() {
             <div className="lg:col-span-2 rounded-3xl border border-[#DDD8CD] bg-white p-6 shadow-xs flex flex-col justify-between gap-4">
               <div>
                 <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-extrabold uppercase tracking-wider bg-emerald-100 text-[#1A4D2E] mb-2">
-                  📊 Live Environmental Impact
+                  <BarChart3 size={14} /> Live Environmental Impact
                 </div>
                 <h3 className="text-lg font-extrabold text-[#1A4D2E]">Instant Optimization Impact</h3>
                 <p className="text-xs text-[#7A8C6E] mt-1 leading-relaxed">
@@ -287,7 +289,7 @@ export default function Recommendations() {
                     IF <strong className="text-gray-900">{rule.field}</strong> {rule.condition_operator} <em>{JSON.stringify(rule.condition_value)}</em>
                     {rule.secondary_condition && ` AND ${rule.secondary_condition.field} ${rule.secondary_condition.operator} ${rule.secondary_condition.value}`}
                   </div>
-                  <div className="text-emerald-800 font-semibold">➔ Suggest: {rule.suggested_alternative}</div>
+                  <div className="text-emerald-800 font-semibold inline-flex items-center gap-1"><ArrowRight size={14} /> Suggest: {rule.suggested_alternative}</div>
                   <div className="text-[11px] text-[#7A8C6E] italic mt-0.5">{rule.reason}</div>
                 </div>
               ))}

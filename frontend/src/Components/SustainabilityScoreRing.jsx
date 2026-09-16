@@ -10,7 +10,6 @@ export default function SustainabilityScoreRing({ sustainability, size = 180, is
     breakdown = [],
     waste_percent = 5.0,
     carbon_footprint_kgco2e_per_sqft = 36.0,
-    baseline_carbon_per_sqft = 36.0,
   } = sustainability;
 
   // Band color mappings matching the app's palette

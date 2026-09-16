@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { getCustomerDashboard, getCustomerProgress } from '../../Assets/api';
+import { AlertTriangle, Building2, Check, FileText } from 'lucide-react';
 
 export default function CustomerProgress() {
   const [progressData, setProgressData] = useState(null);
@@ -29,7 +30,7 @@ export default function CustomerProgress() {
   }
 
   if (error) {
-    return <div className="login-alert-error"><span>⚠</span> {error}</div>;
+    return <div className="login-alert-error"><AlertTriangle size={16} /> {error}</div>;
   }
 
   const stages = progressData?.stages || [];
@@ -64,7 +65,7 @@ export default function CustomerProgress() {
 
       {/* 11 Stages Timeline */}
       <div className="customer-card">
-        <h3 className="customer-card-title"><span>🏗️</span> 11 Standard Construction Milestones</h3>
+        <h3 className="customer-card-title flex items-center gap-1.5"><Building2 size={18} className="text-emerald-800" /> 11 Standard Construction Milestones</h3>
         <div className="stage-timeline-list">
           {stages.map((stage) => {
             const isDone = stage.status === 'completed' || stage.progress_percent >= 100;
@@ -73,8 +74,8 @@ export default function CustomerProgress() {
 
             return (
               <div key={stage.stage_id} className={`stage-timeline-item ${statusClass}`}>
-                <div className="stage-number-icon">
-                  {isDone ? '✓' : stage.stage_id}
+                <div className="stage-number-icon flex items-center justify-center">
+                  {isDone ? <Check size={14} /> : stage.stage_id}
                 </div>
                 <div style={{ flex: 1 }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.25rem' }}>
@@ -105,7 +106,7 @@ export default function CustomerProgress() {
       {/* Inspection Updates Log */}
       {updates.length > 0 && (
         <div className="customer-card">
-          <h3 className="customer-card-title"><span>📝</span> Official Site Inspection Logs</h3>
+          <h3 className="customer-card-title flex items-center gap-1.5"><FileText size={18} className="text-emerald-800" /> Official Site Inspection Logs</h3>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
             {updates.map((u, i) => (
               <div key={i} style={{ padding: '1rem', background: '#f8fafc', borderRadius: '8px', border: '1px solid #e2e8f0' }}>

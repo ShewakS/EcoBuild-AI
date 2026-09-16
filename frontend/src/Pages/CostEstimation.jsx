@@ -5,6 +5,7 @@ import { SliderInput } from '../Components/ui/SliderInput';
 import { StepperInput } from '../Components/ui/StepperInput';
 import { postEstimateCost } from '../Assets/api';
 import { TAMIL_NADU_DISTRICTS } from '../Assets/constants';
+import { Check, Building2, Bed, Utensils, AlertTriangle, Zap } from 'lucide-react';
 
 // Standard bedroom size presets commonly used in Tamil Nadu
 const BEDROOM_PRESETS = [
@@ -101,7 +102,7 @@ function StepIndicator({ step, active, done, label }) {
           color: done || active ? 'white' : 'var(--green-muted)',
         }}
       >
-        {done ? '✓' : step}
+        {done ? <Check size={14} /> : step}
       </div>
       <span
         className="text-sm font-bold"
@@ -320,7 +321,7 @@ export default function CostEstimation() {
         <div className="max-w-screen-xl mx-auto px-6 py-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
           <div>
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider mb-2 bg-[#EDE8DC] text-[#1A4D2E]">
-              🏗️ Tamil Nadu Construction Intelligence
+              <Building2 size={14} /> Tamil Nadu Construction Intelligence
             </div>
             <h1
               className="text-2xl sm:text-3xl font-extrabold tracking-tight"
@@ -372,7 +373,7 @@ export default function CostEstimation() {
                   }}
                 >
                   {TAMIL_NADU_DISTRICTS.map((d) => (
-                    <option key={d} value={d}>📍 {d}</option>
+                    <option key={d} value={d}>{d}</option>
                   ))}
                 </select>
               </Field>
@@ -390,11 +391,11 @@ export default function CostEstimation() {
                     color: 'var(--green-deep)',
                   }}
                 >
-                  <option value="Individual Villa">🏡 Individual Villa / Bungalow</option>
-                  <option value="Apartment">🏢 Apartment / Flat</option>
-                  <option value="Independent House">🏠 Independent House (Single/Multi-story)</option>
-                  <option value="Duplex House">🏘️ Duplex House</option>
-                  <option value="Row House">🧱 Row House / Gated Community</option>
+                  <option value="Individual Villa">Individual Villa / Bungalow</option>
+                  <option value="Apartment">Apartment / Flat</option>
+                  <option value="Independent House">Independent House (Single/Multi-story)</option>
+                  <option value="Duplex House">Duplex House</option>
+                  <option value="Row House">Row House / Gated Community</option>
                 </select>
               </Field>
             </div>
@@ -461,7 +462,7 @@ export default function CostEstimation() {
               >
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
                   <div className="flex items-center gap-2">
-                    <span className="text-xl">🛏️</span>
+                    <span className="text-xl text-[#1A4D2E]"><Bed size={20} /></span>
                     <div>
                       <h3 className="text-sm font-bold text-[#1A4D2E]">Bedroom Dimensions &amp; Sizing</h3>
                       <p className="text-xs text-[#7A8C6E]">Select standard room dimensions (10x10, 10x16, etc.) or custom sizes.</p>
@@ -552,7 +553,7 @@ export default function CostEstimation() {
               >
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
                   <div className="flex items-center gap-2">
-                    <span className="text-xl">🍳</span>
+                    <span className="text-xl text-[#1A4D2E]"><Utensils size={20} /></span>
                     <div>
                       <h3 className="text-sm font-bold text-[#1A4D2E]">Kitchen Dimensions &amp; Sizing</h3>
                       <p className="text-xs text-[#7A8C6E]">Choose kitchen sizes for exact plumbing lines, countertops &amp; appliance points.</p>
@@ -805,7 +806,7 @@ export default function CostEstimation() {
                 className="rounded-xl px-4 py-3 text-sm font-medium flex items-start gap-2"
                 style={{ background: '#FEF2F2', color: '#991B1B', border: '1px solid #FCA5A5' }}
               >
-                <span>⚠️</span>
+                <AlertTriangle size={16} className="shrink-0 mt-0.5" />
                 {error}
               </div>
             )}
@@ -838,7 +839,7 @@ export default function CostEstimation() {
                     Generating Prediction Report…
                   </>
                 ) : (
-                  <span>⚡ Generate Cost, Material &amp; Carbon Report →</span>
+                  <span className="inline-flex items-center gap-1.5"><Zap size={16} /> Generate Cost, Material &amp; Carbon Report →</span>
                 )}
               </button>
             </div>

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Leaf } from 'lucide-react';
+import { Leaf, ArrowRight, Lightbulb, Check, Zap } from 'lucide-react';
 
 export default function EcoMaterialRecommendations({
   recommendations = [],
@@ -40,7 +40,7 @@ export default function EcoMaterialRecommendations({
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
         <div>
           <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-extrabold uppercase tracking-wider bg-emerald-100 text-[#1A4D2E] mb-1">
-            🌿 Low-Carbon Material Alternatives
+            <Leaf size={14} /> Low-Carbon Material Alternatives
           </div>
           <h3 className="text-xl font-extrabold text-[#1A4D2E]">Explainable Eco Recommendations</h3>
           <p className="text-xs text-[#7A8C6E]">
@@ -100,7 +100,9 @@ export default function EcoMaterialRecommendations({
                     <span className="text-[10px] font-bold uppercase text-[#7A8C6E] block">Current</span>
                     <span className="text-xs font-bold text-gray-700">{rec.current_choice}</span>
                   </div>
-                  <div className="px-2 text-sm text-[#1A4D2E] font-extrabold">➔</div>
+                  <div className="px-2 text-[#1A4D2E]">
+                    <ArrowRight size={16} />
+                  </div>
                   <div className="flex-1 text-right">
                     <span className="text-[10px] font-bold uppercase text-emerald-700 block">Suggested</span>
                     <span className="text-xs font-extrabold text-[#1A4D2E]">{rec.suggested_alternative}</span>
@@ -108,8 +110,9 @@ export default function EcoMaterialRecommendations({
                 </div>
 
                 {/* Reason Explanation */}
-                <p className="text-xs text-[#4B5945] leading-relaxed">
-                  💡 <strong className="text-[#1A4D2E]">Why:</strong> {rec.reason}
+                <p className="text-xs text-[#4B5945] leading-relaxed flex items-start gap-1.5">
+                  <Lightbulb size={15} className="shrink-0 text-amber-500 mt-0.5" />
+                  <span><strong className="text-[#1A4D2E]">Why:</strong> {rec.reason}</span>
                 </p>
               </div>
 
@@ -117,7 +120,7 @@ export default function EcoMaterialRecommendations({
               <div className="pt-2 border-t" style={{ borderColor: 'var(--border)' }}>
                 {isApplied ? (
                   <div className="flex items-center justify-center gap-1.5 py-2 text-xs font-bold text-[#1A4D2E]">
-                    <span>✓</span>
+                    <Check size={16} />
                     <span>Applied to Project</span>
                   </div>
                 ) : (
@@ -138,7 +141,8 @@ export default function EcoMaterialRecommendations({
                       </>
                     ) : (
                       <>
-                        <span>⚡ Apply this suggestion</span>
+                        <Zap size={14} />
+                        <span>Apply this suggestion</span>
                       </>
                     )}
                   </button>

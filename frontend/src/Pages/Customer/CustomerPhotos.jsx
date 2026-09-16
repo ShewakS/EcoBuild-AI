@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { getCustomerDashboard, getCustomerImages, BASE_URL } from '../../Assets/api';
+import { AlertTriangle, Camera, Calendar } from 'lucide-react';
 
 export default function CustomerPhotos() {
   const [images, setImages] = useState([]);
@@ -30,7 +31,7 @@ export default function CustomerPhotos() {
   }
 
   if (error) {
-    return <div className="login-alert-error"><span>⚠</span> {error}</div>;
+    return <div className="login-alert-error"><AlertTriangle size={16} /> {error}</div>;
   }
 
   return (
@@ -44,7 +45,9 @@ export default function CustomerPhotos() {
 
       {images.length === 0 ? (
         <div className="customer-card" style={{ textAlign: 'center', padding: '3rem' }}>
-          <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>📷</div>
+          <div style={{ marginBottom: '1rem', display: 'flex', justifyContent: 'center' }}>
+            <Camera size={48} className="text-emerald-700" />
+          </div>
           <h3 style={{ color: '#1b4332', margin: '0 0 0.5rem 0' }}>No Site Photos Uploaded Yet</h3>
           <p style={{ color: '#64748b', margin: 0 }}>
             Your architect will upload photos as work advances through key structural milestones.
@@ -79,8 +82,8 @@ export default function CustomerPhotos() {
                   <p className="customer-photo-caption">
                     {img.caption || img.notes || img.remark || 'Site progress documentation'}
                   </p>
-                  <div className="customer-photo-date">
-                    📅 {img.uploaded_at ? new Date(img.uploaded_at).toLocaleDateString() : 'Recent'}
+                  <div className="customer-photo-date flex items-center gap-1">
+                    <Calendar size={12} /> {img.uploaded_at ? new Date(img.uploaded_at).toLocaleDateString() : 'Recent'}
                   </div>
                 </div>
               </div>

@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
-import { LayoutDashboard, Home, Boxes, DollarSign, Leaf, Calendar, Camera } from 'lucide-react';
+import { LayoutDashboard, Home, Boxes, DollarSign, Leaf, Calendar, Camera, ShieldCheck } from 'lucide-react';
 import { useAuth } from '../../Context/AuthContext';
 import './CustomerLayout.css';
 
@@ -89,7 +89,7 @@ export default function CustomerLayout() {
         <header className="customer-topbar">
           <h1 className="customer-page-title">Homeowner & Client Monitoring Portal</h1>
           <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-            <span style={{
+            <span className="inline-flex items-center gap-1" style={{
               background: '#e8f5e9',
               color: '#1b4332',
               padding: '4px 12px',
@@ -97,7 +97,7 @@ export default function CustomerLayout() {
               fontSize: '0.82rem',
               fontWeight: 700
             }}>
-              🔒 Verified Read-Only Portal
+              <ShieldCheck size={14} /> Verified Read-Only Portal
             </span>
           </div>
         </header>

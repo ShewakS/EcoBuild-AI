@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { getCustomerDashboard, getCustomerMaterials } from '../../Assets/api';
+import { AlertTriangle, Boxes, Leaf } from 'lucide-react';
 
 export default function CustomerMaterials() {
   const [materials, setMaterials] = useState(null);
@@ -29,7 +30,7 @@ export default function CustomerMaterials() {
   }
 
   if (error) {
-    return <div className="login-alert-error"><span>⚠</span> {error}</div>;
+    return <div className="login-alert-error"><AlertTriangle size={16} /> {error}</div>;
   }
 
   const items = materials && Object.keys(materials).length > 0 ? Object.entries(materials) : [];
@@ -44,7 +45,7 @@ export default function CustomerMaterials() {
       </div>
 
       <div className="customer-card">
-        <h3 className="customer-card-title"><span>🧱</span> Structural & Masonry Material Estimates</h3>
+        <h3 className="customer-card-title flex items-center gap-1.5"><Boxes size={18} className="text-emerald-800" /> Structural & Masonry Material Estimates</h3>
         
         {items.length === 0 ? (
           <div style={{ padding: '2rem', textAlign: 'center', color: '#94a3b8' }}>
@@ -103,7 +104,7 @@ export default function CustomerMaterials() {
 
       <div className="customer-card" style={{ background: '#f0fdf4', borderColor: '#bbf7d0' }}>
         <h4 style={{ margin: '0 0 0.5rem 0', color: '#166534', fontSize: '1rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-          <span>🌿</span> Sustainable Material Assurance
+          <Leaf size={16} /> Sustainable Material Assurance
         </h4>
         <p style={{ margin: 0, fontSize: '0.88rem', color: '#166534', lineHeight: '1.5' }}>
           All quantities listed above are continuously optimized by EcoBuild AI algorithms to eliminate construction site over-ordering and adhere to Indian Green Building Council (IGBC) low-carbon guidelines.

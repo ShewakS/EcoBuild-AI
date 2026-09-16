@@ -32,7 +32,7 @@ class BuildingDetails(BaseModel):
     finish_quality: str = Field(default="Standard", description="Finishing standard: Economy, Standard, Premium, Luxury")
     foundation_type: str = Field(default="Isolated Footing", description="Foundation design")
     foundation_depth_ft: Optional[float] = Field(default=6.0, description="Foundation excavation depth in feet")
-    soil_type: str = Field(default="Medium / Clayey", description="Bearing soil classification")
+    soil_type: str = Field(default="Loamy", description="Bearing soil classification")
     seismic_zone: str = Field(default="Zone III (Moderate)", description="IS 1893 Seismic Zone")
     green_certification_target: str = Field(default="GRIHA 3-Star / IGBC Silver", description="Target sustainability rating")
     solar_panels: bool = Field(default=False, description="Rooftop solar PV planned")

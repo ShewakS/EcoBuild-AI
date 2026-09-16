@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { getProjects, createProject, deleteProject, updateProject, assignProjectCustomer } from '../Assets/api';
 import { TAMIL_NADU_DISTRICTS } from '../Assets/constants';
+import { Ruler, Search, ClipboardList, Edit, Trash2, User, MapPin, Building2, X } from 'lucide-react';
 
 export default function ProjectsList() {
   const navigate = useNavigate();
@@ -23,7 +24,7 @@ export default function ProjectsList() {
     name: '',
     email: '',
     phone: '',
-    password: 'Customer@12345',
+    password: '',
   });
   const [assigning, setAssigning] = useState(false);
 
@@ -132,7 +133,7 @@ export default function ProjectsList() {
         name: '',
         email: '',
         phone: '',
-        password: 'Customer@12345',
+        password: '',
       });
       await fetchProjectsList();
     } catch (err) {
@@ -175,7 +176,7 @@ export default function ProjectsList() {
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row md:items-center md:justify-between gap-6">
           <div>
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider mb-3" style={{ background: 'rgba(255,255,255,0.15)', color: '#A3E635' }}>
-              <span>📐</span> Architect &amp; Builder Command Center
+              <Ruler size={14} /> Architect &amp; Builder Command Center
             </div>
             <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-white mb-2">
               Construction Projects Workspace
@@ -234,7 +235,7 @@ export default function ProjectsList() {
               onChange={e => setSearchQuery(e.target.value)}
               className="w-full pl-10 pr-4 py-2.5 rounded-xl border text-sm outline-none transition-all focus:ring-2 focus:ring-[var(--green-mid)] bg-white"
             />
-            <span className="absolute left-3.5 top-3 text-gray-400 text-sm">🔍</span>
+            <span className="absolute left-3.5 top-3 text-gray-400 text-sm"><Search size={16} /></span>
           </div>
 
           <div className="flex items-center gap-2 bg-white p-1 rounded-xl border">
@@ -270,7 +271,7 @@ export default function ProjectsList() {
           </div>
         ) : filtered.length === 0 ? (
           <div className="py-16 text-center bg-white rounded-2xl border border-dashed border-gray-300 p-8">
-            <div className="text-4xl mb-3">📋</div>
+            <div className="text-4xl mb-3 flex justify-center"><ClipboardList size={40} className="text-gray-400" /></div>
             <h3 className="text-lg font-bold text-gray-800 mb-1">No Projects Found</h3>
             <p className="text-sm text-gray-500 max-w-md mx-auto mb-5">
               {searchQuery ? 'No projects match your search query.' : 'Create your first construction project to begin prediction and progress monitoring.'}
@@ -318,14 +319,14 @@ export default function ProjectsList() {
                           className="w-7 h-7 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-600 flex items-center justify-center text-xs transition-colors"
                           title="Edit Project Details"
                         >
-                          ✏️
+                          <Edit size={14} />
                         </button>
                         <button
                           onClick={() => handleDeleteProject(proj.project_id, proj.project_name)}
                           className="w-7 h-7 rounded-lg bg-red-50 hover:bg-red-100 text-red-600 flex items-center justify-center text-xs transition-colors"
                           title="Delete Project"
                         >
-                          🗑️
+                          <Trash2 size={14} />
                         </button>
                       </div>
                     </div>
@@ -335,11 +336,11 @@ export default function ProjectsList() {
                       {proj.project_name}
                     </h3>
                     <p className="text-xs text-gray-500 mb-4 flex items-center gap-1.5 flex-wrap">
-                      <span>👤 {proj.client_name}</span>
+                      <span className="inline-flex items-center gap-1"><User size={12} /> {proj.client_name}</span>
                       <span>•</span>
-                      <span>📍 {proj.location}</span>
+                      <span className="inline-flex items-center gap-1"><MapPin size={12} /> {proj.location}</span>
                       <span>•</span>
-                      <span>🏛️ {proj.architect_name}</span>
+                      <span className="inline-flex items-center gap-1"><Building2 size={12} /> {proj.architect_name}</span>
                     </p>
 
                     {/* Feature 1: Prediction & Specifications Summary */}
@@ -404,13 +405,13 @@ export default function ProjectsList() {
                           name: proj.customer_name || proj.client_name || '',
                           email: proj.customer_email || '',
                           phone: '',
-                          password: 'Customer@12345',
+                          password: '',
                         });
                       }}
                       className="text-xs font-bold px-3 py-2 rounded-xl border border-emerald-600 text-emerald-800 hover:bg-emerald-50 transition-colors flex items-center gap-1 shrink-0"
                       title="Assign or invite Client to monitor this project"
                     >
-                      <span>👤</span> {proj.customer_email ? 'Client Linked' : 'Invite Client'}
+                      <User size={12} /> {proj.customer_email ? 'Client Linked' : 'Invite Client'}
                     </button>
                   </div>
                 </div>
@@ -434,7 +435,7 @@ export default function ProjectsList() {
                 onClick={() => setIsModalOpen(false)}
                 className="w-8 h-8 rounded-full bg-gray-100 text-gray-600 hover:bg-gray-200 flex items-center justify-center font-bold text-sm"
               >
-                ✕
+                <X size={16} />
               </button>
             </div>
 
@@ -522,7 +523,7 @@ export default function ProjectsList() {
                 onClick={() => setEditingProject(null)}
                 className="w-8 h-8 rounded-full bg-gray-100 text-gray-600 hover:bg-gray-200 flex items-center justify-center font-bold text-sm"
               >
-                ✕
+                <X size={16} />
               </button>
             </div>
 
@@ -621,7 +622,7 @@ export default function ProjectsList() {
                 onClick={() => setAssigningProject(null)}
                 className="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-600 flex items-center justify-center text-sm font-bold"
               >
-                ✕
+                <X size={16} />
               </button>
             </div>
 
