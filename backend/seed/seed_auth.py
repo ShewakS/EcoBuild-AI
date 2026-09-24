@@ -4,6 +4,18 @@ import sys
 # Ensure backend root is on sys.path
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
+# ---------------------------------------------------------------------------
+# Seed credentials — loaded from environment variables.
+# For local dev, export these in your shell or .env file before running.
+# In production, always override via real secrets management — never commit
+# actual passwords to source control.
+# ---------------------------------------------------------------------------
+_ADMIN_PW     = os.environ.get("SEED_ADMIN_PASSWORD",      "Admin@12345")
+_ARCH_A_PW    = os.environ.get("SEED_ARCHITECT_A_PASSWORD", "Architect@12345")
+_ARCH_B_PW    = os.environ.get("SEED_ARCHITECT_B_PASSWORD", "Builder@12345")
+_CUST_A_PW    = os.environ.get("SEED_CUSTOMER_A_PASSWORD",  "Customer@12345")
+_CUST_B_PW    = os.environ.get("SEED_CUSTOMER_B_PASSWORD",  "Customer@12345")
+
 import asyncio
 from datetime import datetime, timedelta
 from config import (
@@ -60,7 +72,7 @@ async def seed_auth_data():
         {
             "user_id": "USR-ADMIN-001",
             "email": "admin@ecobuild.ai",
-            "password_hash": hash_password("Admin@12345"),
+            "password_hash": hash_password(_ADMIN_PW),
             "name": "Platform Super Admin",
             "role": UserRole.SUPER_ADMIN,
             "phone": "+91 98765 00001",
@@ -75,7 +87,7 @@ async def seed_auth_data():
         {
             "user_id": "USR-ARCH-001",
             "email": "architect@ecobuild.ai",
-            "password_hash": hash_password("Architect@12345"),
+            "password_hash": hash_password(_ARCH_A_PW),
             "name": "Ar. Priya Sharma",
             "role": UserRole.ARCHITECT,
             "phone": "+91 98450 11223",
@@ -90,7 +102,7 @@ async def seed_auth_data():
         {
             "user_id": "USR-ARCH-002",
             "email": "builder@ecobuild.ai",
-            "password_hash": hash_password("Builder@12345"),
+            "password_hash": hash_password(_ARCH_B_PW),
             "name": "Eng. Rajesh Verma",
             "role": UserRole.ARCHITECT,
             "phone": "+91 98110 33445",
@@ -105,7 +117,7 @@ async def seed_auth_data():
         {
             "user_id": "USR-CUST-001",
             "email": "customer@ecobuild.ai",
-            "password_hash": hash_password("Customer@12345"),
+            "password_hash": hash_password(_CUST_A_PW),
             "name": "Amit Kapoor",
             "role": UserRole.CUSTOMER,
             "phone": "+91 97123 45678",
@@ -120,7 +132,7 @@ async def seed_auth_data():
         {
             "user_id": "USR-CUST-002",
             "email": "client.b@ecobuild.ai",
-            "password_hash": hash_password("Customer@12345"),
+            "password_hash": hash_password(_CUST_B_PW),
             "name": "Suresh Mehta",
             "role": UserRole.CUSTOMER,
             "phone": "+91 98222 55667",

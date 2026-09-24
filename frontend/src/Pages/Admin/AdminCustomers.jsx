@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { getAdminCustomers } from '../../Assets/api';
+import { AlertTriangle, Folder } from 'lucide-react';
 
 export default function AdminCustomers() {
   const [customers, setCustomers] = useState([]);
@@ -32,7 +33,7 @@ export default function AdminCustomers() {
 
       {error && (
         <div className="login-alert-error" style={{ marginBottom: '1.5rem' }}>
-          <span>⚠</span> {error}
+          <AlertTriangle size={16} /> {error}
         </div>
       )}
 
@@ -84,8 +85,8 @@ export default function AdminCustomers() {
                       {c.projects && c.projects.length > 0 ? (
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.2rem' }}>
                           {c.projects.map((pr) => (
-                            <span key={pr.project_id} style={{ fontSize: '0.82rem', color: '#1b4332', fontWeight: 600 }}>
-                              📁 {pr.project_name} (<code>{pr.project_id}</code>)
+                            <span key={pr.project_id} style={{ fontSize: '0.82rem', color: '#1b4332', fontWeight: 600, display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                              <Folder size={14} /> {pr.project_name} (<code>{pr.project_id}</code>)
                             </span>
                           ))}
                         </div>

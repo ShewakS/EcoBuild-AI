@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { Ruler, Building2, Leaf } from 'lucide-react';
 
 export default function Home() {
   return (
@@ -48,10 +49,10 @@ export default function Home() {
           }}
         >
           <div
-            className="w-12 h-12 rounded-xl flex items-center justify-center text-2xl mb-4 transition-transform duration-200 group-hover:scale-110"
+            className="w-12 h-12 rounded-xl flex items-center justify-center text-white text-2xl mb-4 transition-transform duration-200 group-hover:scale-110"
             style={{ background: 'linear-gradient(135deg, var(--green-mid), var(--green-deep))' }}
           >
-            📐
+            <Ruler size={24} />
           </div>
           <div className="text-[10px] font-bold uppercase tracking-wider text-[var(--green-mid)] mb-1">
             New Command Center
@@ -89,10 +90,10 @@ export default function Home() {
           }}
         >
           <div
-            className="w-12 h-12 rounded-xl flex items-center justify-center text-2xl mb-4 transition-transform duration-200 group-hover:scale-110"
+            className="w-12 h-12 rounded-xl flex items-center justify-center text-white text-2xl mb-4 transition-transform duration-200 group-hover:scale-110"
             style={{ background: 'linear-gradient(135deg, var(--rust), #B23B0E)' }}
           >
-            🏗️
+            <Building2 size={24} />
           </div>
           <div className="text-[10px] font-bold uppercase tracking-wider text-gray-400 mb-1">
             ML Models
@@ -128,10 +129,10 @@ export default function Home() {
           }}
         >
           <div
-            className="w-12 h-12 rounded-xl flex items-center justify-center text-2xl mb-4"
+            className="w-12 h-12 rounded-xl flex items-center justify-center text-white text-2xl mb-4"
             style={{ background: 'linear-gradient(135deg, #0284C7, #0369A1)' }}
           >
-            🌱
+            <Leaf size={24} />
           </div>
           <div className="text-[10px] font-bold uppercase tracking-wider text-sky-600 mb-1">
             IFC Indian Standards

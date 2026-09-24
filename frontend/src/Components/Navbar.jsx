@@ -3,7 +3,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../Context/AuthContext';
 import {
   Building2, FolderOpen, Calculator, Leaf, ShieldCheck,
-  LayoutDashboard, LogOut, Menu, X, ChevronRight, User
+  LayoutDashboard, LogOut, Menu, X, ChevronRight
 } from 'lucide-react';
 
 /* ── Link sets per role ── */
@@ -249,7 +249,28 @@ export default function Navbar() {
                 {label}
               </Link>
             ))}
-            {!isAuthenticated && (
+            {isAuthenticated ? (
+              <div className="pt-2 border-t border-gray-200 dark:border-gray-800 flex flex-col gap-2">
+                <Link
+                  to="/profile"
+                  onClick={() => setMenuOpen(false)}
+                  className="flex items-center justify-between py-1.5 text-sm font-medium"
+                  style={{ color: textColor }}
+                >
+                  <span className="font-semibold">{user?.name || 'User'}</span>
+                  <span className="badge" style={{ background: rm.bg, color: rm.color, fontSize: '0.65rem' }}>
+                    {rm.label}
+                  </span>
+                </Link>
+                <button
+                  onClick={handleLogout}
+                  className="flex items-center gap-2 text-sm font-medium py-1.5 text-red-600 dark:text-red-400 text-left"
+                >
+                  <LogOut size={15} />
+                  Sign Out
+                </button>
+              </div>
+            ) : (
               <Link
                 to="/login"
                 onClick={() => setMenuOpen(false)}

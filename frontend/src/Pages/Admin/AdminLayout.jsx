@@ -1,6 +1,7 @@
 import React from 'react';
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../Context/AuthContext';
+import { LayoutDashboard, Ruler, Building2, Users, CreditCard, TrendingUp } from 'lucide-react';
 import './AdminLayout.css';
 
 export default function AdminLayout() {
@@ -26,42 +27,42 @@ export default function AdminLayout() {
             to="/admin/dashboard"
             className={({ isActive }) => `admin-nav-item ${isActive ? 'active' : ''}`}
           >
-            <span>📊</span> Dashboard
+            <LayoutDashboard size={16} /> Dashboard
           </NavLink>
 
           <NavLink
             to="/admin/architects"
             className={({ isActive }) => `admin-nav-item ${isActive ? 'active' : ''}`}
           >
-            <span>📐</span> Architects / Builders
+            <Ruler size={16} /> Architects / Builders
           </NavLink>
 
           <NavLink
             to="/admin/projects"
             className={({ isActive }) => `admin-nav-item ${isActive ? 'active' : ''}`}
           >
-            <span>🏗️</span> Platform Projects
+            <Building2 size={16} /> Platform Projects
           </NavLink>
 
           <NavLink
             to="/admin/customers"
             className={({ isActive }) => `admin-nav-item ${isActive ? 'active' : ''}`}
           >
-            <span>👥</span> Platform Customers
+            <Users size={16} /> Platform Customers
           </NavLink>
 
           <NavLink
             to="/admin/plans"
             className={({ isActive }) => `admin-nav-item ${isActive ? 'active' : ''}`}
           >
-            <span>💳</span> Plans & Subscriptions
+            <CreditCard size={16} /> Plans & Subscriptions
           </NavLink>
 
           <NavLink
             to="/admin/usage"
             className={({ isActive }) => `admin-nav-item ${isActive ? 'active' : ''}`}
           >
-            <span>📈</span> Usage Analytics
+            <TrendingUp size={16} /> Usage Analytics
           </NavLink>
         </nav>
 

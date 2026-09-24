@@ -4,12 +4,6 @@ import { Cpu, Leaf, BarChart3, Building2 } from 'lucide-react';
 import { useAuth } from '../Context/AuthContext';
 import './Login.css';
 
-const PILLS = [
-  { role: 'SUPER_ADMIN', badge: 'badge-admin', label: 'Super Admin',   email: 'admin@ecobuild.ai',     pw: 'Admin@12345',     name: 'Platform Admin' },
-  { role: 'ARCHITECT',   badge: 'badge-arch',  label: 'Architect',     email: 'architect@ecobuild.ai', pw: 'Architect@12345', name: 'Ar. Priya Sharma' },
-  { role: 'CUSTOMER',    badge: 'badge-cust',  label: 'Customer',      email: 'customer@ecobuild.ai',  pw: 'Customer@12345',  name: 'Amit Kapoor' },
-];
-
 export default function Login() {
   const navigate = useNavigate();
   const location = useLocation();
@@ -37,8 +31,6 @@ export default function Login() {
       setError(err.message || 'Login failed. Please check your credentials.');
     } finally { setLoading(false); }
   };
-
-  const fillDemo = (e, pw) => { setEmail(e); setPassword(pw); setError(''); };
 
   return (
     <div className="auth-page">
@@ -82,7 +74,6 @@ export default function Login() {
           </div>
         </div>
       </div>
-
 
       {/* ── Right Form Panel ── */}
       <div className="auth-panel-right">
@@ -149,28 +140,6 @@ export default function Login() {
               {loading ? 'Signing in...' : 'Sign In'}
             </button>
           </form>
-
-          {/* Demo Credentials */}
-          <div className="demo-section">
-            <div className="demo-title">Quick Demo Login (1-Click)</div>
-            <div className="demo-pills">
-              {PILLS.map((p) => (
-                <button
-                  key={p.role}
-                  type="button"
-                  className="demo-pill"
-                  onClick={() => fillDemo(p.email, p.pw)}
-                  id={`demo-${p.role.toLowerCase()}-btn`}
-                >
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                    <span className={`demo-pill-badge ${p.badge}`}>{p.label}</span>
-                    <span>{p.name}</span>
-                  </div>
-                  <span style={{ fontSize: '0.75rem', opacity: 0.6 }}>{p.email}</span>
-                </button>
-              ))}
-            </div>
-          </div>
         </div>
       </div>
     </div>

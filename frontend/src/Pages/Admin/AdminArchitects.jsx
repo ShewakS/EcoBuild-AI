@@ -23,7 +23,7 @@ export default function AdminArchitects() {
     email: '',
     phone: '',
     plan: 'Professional',
-    password: 'Architect@12345',
+    password: '',
   });
   const [creating, setCreating] = useState(false);
 
@@ -77,7 +77,7 @@ export default function AdminArchitects() {
       setError('');
       const result = await createAdminArchitect(formData);
       setShowModal(false);
-      setFormData({ name: '', company_name: '', email: '', phone: '', plan: 'Professional', password: 'Architect@12345' });
+      setFormData({ name: '', company_name: '', email: '', phone: '', plan: 'Professional', password: '' });
       setNewCredentials({
         name: result.name || formData.name,
         email: result.email || formData.email,

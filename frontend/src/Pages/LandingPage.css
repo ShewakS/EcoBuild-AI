@@ -406,7 +406,7 @@
 }
 
 .role-features li::before {
-  content: '✓';
+  content: '\2713';
   font-weight: 900;
   font-size: 0.75rem;
   flex-shrink: 0;

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { getAdminDashboard } from '../../Assets/api';
+import { AlertTriangle, RefreshCw, CheckCircle2 } from 'lucide-react';
 
 export default function AdminDashboard() {
   const [data, setData] = useState(null);
@@ -34,7 +35,7 @@ export default function AdminDashboard() {
   if (error) {
     return (
       <div className="login-alert-error" style={{ margin: '1rem' }}>
-        <span>⚠</span> {error}
+        <AlertTriangle size={16} /> {error}
       </div>
     );
   }
@@ -51,8 +52,8 @@ export default function AdminDashboard() {
             Real-time platform-wide figures computed from MongoDB
           </p>
         </div>
-        <button className="admin-btn admin-btn-secondary" onClick={fetchDashboard}>
-          🔄 Refresh Metrics
+        <button className="admin-btn admin-btn-secondary flex items-center gap-1.5" onClick={fetchDashboard}>
+          <RefreshCw size={14} /> Refresh Metrics
         </button>
       </div>
 
@@ -61,19 +62,19 @@ export default function AdminDashboard() {
         <div className="admin-kpi-card">
           <div className="admin-kpi-label">Architects / Builders</div>
           <div className="admin-kpi-value">{overview?.total_architects || 0}</div>
-          <div className="admin-kpi-sub">✓ {overview?.active_architects || 0} Active accounts</div>
+          <div className="admin-kpi-sub flex items-center gap-1"><CheckCircle2 size={12} /> {overview?.active_architects || 0} Active accounts</div>
         </div>
 
         <div className="admin-kpi-card">
           <div className="admin-kpi-label">Platform Projects</div>
           <div className="admin-kpi-value">{overview?.total_projects || 0}</div>
-          <div className="admin-kpi-sub">✓ {overview?.active_projects || 0} In Progress</div>
+          <div className="admin-kpi-sub flex items-center gap-1"><CheckCircle2 size={12} /> {overview?.active_projects || 0} In Progress</div>
         </div>
 
         <div className="admin-kpi-card">
           <div className="admin-kpi-label">Platform Customers</div>
           <div className="admin-kpi-value">{overview?.total_customers || 0}</div>
-          <div className="admin-kpi-sub">✓ {overview?.active_customers || 0} Active accounts</div>
+          <div className="admin-kpi-sub flex items-center gap-1"><CheckCircle2 size={12} /> {overview?.active_customers || 0} Active accounts</div>
         </div>
 
         <div className="admin-kpi-card">

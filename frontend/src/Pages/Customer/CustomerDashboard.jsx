@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { getCustomerDashboard } from '../../Assets/api';
+import { AlertTriangle, Building2, MapPin, Ruler, Calendar, Star, ClipboardList, Camera } from 'lucide-react';
 
 export default function CustomerDashboard() {
   const [data, setData] = useState(null);
@@ -33,7 +34,7 @@ export default function CustomerDashboard() {
   if (error) {
     return (
       <div className="login-alert-error">
-        <span>⚠</span> {error}
+        <AlertTriangle size={16} /> {error}
       </div>
     );
   }
@@ -41,7 +42,9 @@ export default function CustomerDashboard() {
   if (!data?.has_project) {
     return (
       <div className="customer-card" style={{ textAlign: 'center', padding: '3rem' }}>
-        <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🏗️</div>
+        <div style={{ marginBottom: '1rem', display: 'flex', justifyContent: 'center' }}>
+          <Building2 size={48} className="text-emerald-700" />
+        </div>
         <h2>No Active Construction Project Assigned</h2>
         <p style={{ color: '#64748b', maxWidth: '500px', margin: '0 auto 1.5rem' }}>
           Your account is active, but your architect has not assigned a project to your email address yet.
@@ -66,10 +69,10 @@ export default function CustomerDashboard() {
             Assigned Construction Project
           </div>
           <h2 className="customer-banner-title">{primary_project.project_name}</h2>
-          <div className="customer-banner-meta">
-            <span>📍 {primary_project.location}</span>
-            <span>📐 Architect: {primary_project.architect_name || 'Design Lead'}</span>
-            <span>📅 Status: {primary_project.status || 'In Progress'}</span>
+          <div className="customer-banner-meta flex flex-wrap gap-3">
+            <span className="inline-flex items-center gap-1"><MapPin size={13} /> {primary_project.location}</span>
+            <span className="inline-flex items-center gap-1"><Ruler size={13} /> Architect: {primary_project.architect_name || 'Design Lead'}</span>
+            <span className="inline-flex items-center gap-1"><Calendar size={13} /> Status: {primary_project.status || 'In Progress'}</span>
           </div>
         </div>
 
@@ -127,8 +130,8 @@ export default function CustomerDashboard() {
           <div className="admin-kpi-value" style={{ color: '#166534' }}>
             {score} / 100
           </div>
-          <div className="admin-kpi-sub" style={{ color: '#15803d' }}>
-            ★ {tier} Certified
+          <div className="admin-kpi-sub inline-flex items-center gap-1" style={{ color: '#15803d' }}>
+            <Star size={12} fill="#15803d" /> {tier} Certified
           </div>
         </div>
       </div>
@@ -137,8 +140,8 @@ export default function CustomerDashboard() {
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(420px, 1fr))', gap: '1.5rem' }}>
         {/* Recent Updates */}
         <div className="customer-card">
-          <h3 className="customer-card-title">
-            <span>📋</span> Recent Construction Log & Updates
+          <h3 className="customer-card-title flex items-center gap-1.5">
+            <ClipboardList size={18} className="text-emerald-800" /> Recent Construction Log & Updates
           </h3>
           {recent_updates && recent_updates.length > 0 ? (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
@@ -164,8 +167,8 @@ export default function CustomerDashboard() {
         {/* Site Gallery Overview */}
         <div className="customer-card">
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
-            <h3 className="customer-card-title" style={{ margin: 0 }}>
-              <span>📷</span> Site Inspection Photos
+            <h3 className="customer-card-title flex items-center gap-1.5" style={{ margin: 0 }}>
+              <Camera size={18} className="text-emerald-800" /> Site Inspection Photos
             </h3>
             <Link to="/customer/photos" className="admin-btn admin-btn-secondary">
               View Gallery ({images_count || 0})
@@ -175,7 +178,9 @@ export default function CustomerDashboard() {
             Your architect uploads live site photos during each stage of construction for transparent quality verification.
           </p>
           <div style={{ background: '#f8fafc', borderRadius: '8px', padding: '1.5rem', textAlign: 'center', border: '1px dashed #cbd5e1' }}>
-            <div style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>📸</div>
+            <div style={{ marginBottom: '0.5rem', display: 'flex', justifyContent: 'center' }}>
+              <Camera size={32} className="text-emerald-800" />
+            </div>
             <div style={{ fontWeight: 700, color: '#1b4332' }}>{images_count || 0} Photos Uploaded</div>
             <div style={{ fontSize: '0.82rem', color: '#64748b', marginTop: '0.25rem' }}>
               Inspected and approved by {primary_project.architect_name || 'Architect'}

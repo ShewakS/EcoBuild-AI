@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { getAdminSubscriptions } from '../../Assets/api';
+import { AlertTriangle } from 'lucide-react';
 
 export default function AdminPlans() {
   const [subs, setSubs] = useState([]);
@@ -32,7 +33,7 @@ export default function AdminPlans() {
 
       {error && (
         <div className="login-alert-error" style={{ marginBottom: '1.5rem' }}>
-          <span>⚠</span> {error}
+          <AlertTriangle size={16} /> {error}
         </div>
       )}
 

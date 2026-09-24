@@ -228,7 +228,7 @@ async def assign_customer_to_project(project_id: str, customer_data: Dict[str, A
     user = await db[USERS_COLLECTION].find_one({"email": email_clean})
     if not user:
         cust_id = f"USR-CUST-{uuid.uuid4().hex[:6].upper()}"
-        pwd = customer_data.get("password") or "Customer@12345"
+        pwd = customer_data.get("password") or os.environ.get("DEFAULT_CUSTOMER_PASSWORD", "EcoBuild#Cust2026")
         user_doc = {
             "user_id": cust_id,
             "email": email_clean,
