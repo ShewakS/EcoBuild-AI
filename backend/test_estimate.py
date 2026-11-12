@@ -36,6 +36,6 @@ if resp.status_code == 200:
     print("  Sand tons:     ", data["quantities"]["ml"]["sand_tons"])
     print("  Bricks:        ", data["quantities"]["ml"]["brick_count"])
     print("  Carbon (tCO2): ", data["carbon_footprint"]["total_carbon_tons"])
-    print("  Sust. Score:   ", data["sustainability_score"]["total_score"])
+    print("  Sust. Score:   ", data["sustainability_score"]["score"])
 else:
     print("ERROR:", resp.text[:800])
