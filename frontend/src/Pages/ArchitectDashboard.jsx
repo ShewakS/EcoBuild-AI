@@ -473,18 +473,30 @@ export default function ArchitectDashboard() {
       const sustRes = await postSustainabilityScore({
         inputs: payload,
         waste_percent: wasteRes?.average_waste_percent || 5.0,
-        carbon_footprint_kgco2e: carbonRes?.total_carbon_footprint_kgco2e || null,
-        carbon_footprint_kgco2e_per_sqft: carbonRes?.carbon_intensity_kgco2e_per_sqft || null,
+        carbon_footprint_kgco2e: carbonRes?.total_carbon_kg || null,
+        carbon_footprint_kgco2e_per_sqft: carbonRes?.carbon_intensity_kg_per_sqft || null,
         estimate_id: estRes?.estimate_id || null,
       });
       setSustainabilityData(sustRes);
 
-      // Optionally save building details back to MongoDB
+      // Optionally save building details back to MongoDB (non-blocking)
       if (saveToDb) {
-        await updateProject(projectId, {
-          building_details: currentSpecs,
-          estimate_id: estRes?.estimate_id || undefined,
-        });
+        try {
+          await updateProject(projectId, {
+            building_details: currentSpecs,
+            estimate_id: estRes?.estimate_id || undefined,
+          });
+        } catch (dbErr) {
+          console.warn('[ArchitectDashboard] Non-fatal project save notice:', dbErr.message);
+        }
+
+        // Smoothly scroll down to prediction results so architect sees updated values immediately
+        setTimeout(() => {
+          const el = document.getElementById('prediction-results-section');
+          if (el) {
+            el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }
+        }, 150);
       }
     } catch (err) {
       console.error('[ArchitectDashboard] Prediction failed:', err);
@@ -712,9 +724,9 @@ export default function ArchitectDashboard() {
         <div className="max-w-7xl mx-auto px-6 flex items-center gap-2 border-t py-1">
           <button
             onClick={() => setTab('prediction')}
-            className={`px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition-all ${
+            className={`px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition-all cursor-pointer ${
               currentTab === 'prediction' 
-                ? 'bg-[var(--green-deep)] text-white shadow-sm' 
+                ? 'bg-[#1A4D2E] text-white shadow-sm' 
                 : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
             }`}
           >
@@ -724,15 +736,15 @@ export default function ArchitectDashboard() {
 
           <button
             onClick={() => setTab('progress')}
-            className={`px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition-all ${
+            className={`px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition-all cursor-pointer ${
               currentTab === 'progress' 
-                ? 'bg-[var(--green-deep)] text-white shadow-sm' 
+                ? 'bg-[#1A4D2E] text-white shadow-sm' 
                 : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
             }`}
           >
             <ClipboardList size={14} />
             <span>2. Construction Progress &amp; Inspection Photos</span>
-            <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-blue-100 text-blue-800 font-bold ml-1">
+            <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-emerald-100 text-emerald-800 font-bold ml-1">
               {progressPct}%
             </span>
           </button>
@@ -1134,14 +1146,24 @@ export default function ArchitectDashboard() {
 
                 <div className="flex items-center justify-between pt-4 border-t" style={{ borderColor: 'var(--border)' }}>
                   <button
+                    id="btn-quick-predict"
                     type="button"
                     onClick={() => runPrediction(specs, project?.location, true)}
                     disabled={predicting}
                     className="inline-flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-bold text-white shadow-md hover:shadow-lg active:scale-95 transition-all disabled:opacity-50 cursor-pointer"
-                    style={{ background: 'linear-gradient(135deg, var(--rust), #B23B0E)' }}
+                    style={{ background: 'linear-gradient(135deg, #D4541A, #B23B0E)', color: '#ffffff' }}
                   >
-                    {predicting ? <div className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" /> : <Zap size={14} />}
-                    <span>{predicting ? 'Predicting...' : 'Quick Predict Cost'}</span>
+                    {predicting ? (
+                      <>
+                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                        <span>Predicting...</span>
+                      </>
+                    ) : (
+                      <>
+                        <Zap size={15} className="text-amber-200" />
+                        <span>Quick Predict Cost &amp; Materials</span>
+                      </>
+                    )}
                   </button>
 
                   <button
@@ -1149,7 +1171,7 @@ export default function ArchitectDashboard() {
                     type="button"
                     onClick={() => setFormStep(2)}
                     className="inline-flex items-center gap-2 px-8 py-3 rounded-xl text-sm font-bold text-white shadow-md hover:shadow-lg active:scale-95 transition-all cursor-pointer"
-                    style={{ background: 'var(--green-deep)' }}
+                    style={{ background: '#1A4D2E', color: '#ffffff' }}
                   >
                     Next: Site &amp; Structure Specifications →
                   </button>
@@ -1278,18 +1300,18 @@ export default function ArchitectDashboard() {
                     onClick={() => runPrediction(specs, project?.location, true)}
                     disabled={predicting}
                     className="inline-flex items-center gap-2 px-8 py-3 rounded-xl text-sm font-bold text-white shadow-md hover:shadow-lg active:scale-95 transition-all disabled:opacity-60 disabled:cursor-not-allowed cursor-pointer"
-                    style={{ background: 'linear-gradient(135deg, #D4541A, var(--rust))' }}
+                    style={{ background: 'linear-gradient(135deg, #D4541A, #B23B0E)', color: '#ffffff' }}
                   >
                     {predicting ? (
                       <>
-                        <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
-                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-                        </svg>
-                        Predicting Cost &amp; Materials…
+                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                        <span>Predicting Cost &amp; Materials…</span>
                       </>
                     ) : (
-                      <span className="inline-flex items-center gap-1.5"><Zap size={14} /> Predict Cost &amp; Material Quantity →</span>
+                      <>
+                        <Zap size={15} className="text-amber-200" />
+                        <span>Predict Cost &amp; Material Quantity →</span>
+                      </>
                     )}
                   </button>
                 </div>
@@ -1344,23 +1366,28 @@ export default function ArchitectDashboard() {
                 POST-PREDICTION RESULTS & MATERIAL SWITCHING
             ═══════════════════════════════════════════════════════════════════ */}
             {hasPrediction && !predicting && (
-              <div className="space-y-8">
+              <div id="prediction-results-section" className="space-y-8 scroll-mt-24">
                 {/* 1. Cost & Material Prediction Card with LIVE MATERIAL SWITCHING */}
-                <div className="bg-white rounded-2xl border p-6 shadow-sm">
+                <div className="bg-white rounded-2xl border p-6 shadow-sm border-emerald-200 ring-1 ring-emerald-100">
                   <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b pb-4 mb-5">
                     <div>
-                      <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800 mb-1">
-                        <DollarSign size={14} /> Phase 1 &amp; Phase 2 ML Predictions
+                      <div className="flex items-center gap-2 flex-wrap mb-1.5">
+                        <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800">
+                          <DollarSign size={14} /> Phase 1 &amp; Phase 2 ML Predictions
+                        </span>
+                        <span className="text-[11px] font-semibold text-gray-600 bg-gray-100 px-2.5 py-0.5 rounded-md border border-gray-200">
+                          Active Prediction: {estimateData?.inputs?.built_up_area_sqft || specs.built_up_area_sqft || 1500} sqft • {estimateData?.inputs?.floors || specs.floors || 1} Floor(s) • {estimateData?.inputs?.finish_quality || specs.finish_quality || 'Standard'} • {estimateData?.inputs?.wall_material || specs.wall_material || 'Brick'} • {specs.inflation_index ? `${specs.inflation_index}x inflation` : '1.00x'}
+                        </span>
                       </div>
-                      <h3 className="text-2xl font-extrabold text-gray-900 mt-1">
+                      <h3 className="text-3xl font-extrabold text-gray-900 mt-1">
                         ₹ {estimateData?.breakdown?.total_cost
                           ? Math.round(estimateData.breakdown.total_cost).toLocaleString('en-IN')
                           : '—'}
                       </h3>
-                      <p className="text-xs text-gray-500">
+                      <p className="text-xs text-gray-500 mt-0.5">
                         Total Project Cost • Rate: ₹{' '}
-                        {estimateData?.breakdown?.total_cost && estimateData?.inputs?.built_up_area_sqft
-                          ? Math.round(estimateData.breakdown.total_cost / estimateData.inputs.built_up_area_sqft).toLocaleString('en-IN')
+                        {estimateData?.breakdown?.total_cost && (estimateData?.inputs?.built_up_area_sqft || specs.built_up_area_sqft)
+                          ? Math.round(estimateData.breakdown.total_cost / (estimateData.inputs?.built_up_area_sqft || specs.built_up_area_sqft)).toLocaleString('en-IN')
                           : '—'} / sq.ft
                       </p>
                     </div>
@@ -1371,7 +1398,7 @@ export default function ArchitectDashboard() {
                       <select
                         value={specs.wall_material}
                         onChange={e => handleMaterialChange('wall_material', e.target.value)}
-                        className="px-3 py-1.5 rounded-lg border text-xs font-semibold bg-white outline-none"
+                        className="px-3 py-1.5 rounded-lg border text-xs font-semibold bg-white outline-none cursor-pointer hover:border-gray-400"
                       >
                         <option value="AAC Block">AAC Block</option>
                         <option value="Fly Ash Brick">Fly Ash Brick</option>
@@ -1380,7 +1407,7 @@ export default function ArchitectDashboard() {
                       <select
                         value={specs.flooring}
                         onChange={e => handleMaterialChange('flooring', e.target.value)}
-                        className="px-3 py-1.5 rounded-lg border text-xs font-semibold bg-white outline-none"
+                        className="px-3 py-1.5 rounded-lg border text-xs font-semibold bg-white outline-none cursor-pointer hover:border-gray-400"
                       >
                         <option value="Vitrified Tile">Vitrified Tile</option>
                         <option value="Granite">Granite</option>
@@ -1389,20 +1416,68 @@ export default function ArchitectDashboard() {
                     </div>
                   </div>
 
+                  {/* Civil Engineering Trade Breakdown */}
+                  {estimateData?.breakdown && (
+                    <div className="mb-5 p-3.5 rounded-xl bg-gray-50/80 border border-gray-100">
+                      <span className="text-[11px] font-bold uppercase tracking-wider text-gray-500 block mb-2">
+                        Trade &amp; Component Cost Breakdown
+                      </span>
+                      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2">
+                        <div className="p-2 rounded-lg bg-white border border-gray-100">
+                          <span className="text-[10px] text-gray-500 block">Materials (52%)</span>
+                          <span className="text-xs font-extrabold text-gray-800">
+                            ₹ {Math.round(estimateData.breakdown.material_cost || 0).toLocaleString('en-IN')}
+                          </span>
+                        </div>
+                        <div className="p-2 rounded-lg bg-white border border-gray-100">
+                          <span className="text-[10px] text-gray-500 block">Labour (22%)</span>
+                          <span className="text-xs font-extrabold text-gray-800">
+                            ₹ {Math.round(estimateData.breakdown.labour_cost || 0).toLocaleString('en-IN')}
+                          </span>
+                        </div>
+                        <div className="p-2 rounded-lg bg-white border border-gray-100">
+                          <span className="text-[10px] text-gray-500 block">Electrical (6%)</span>
+                          <span className="text-xs font-extrabold text-gray-800">
+                            ₹ {Math.round(estimateData.breakdown.electrical_cost || 0).toLocaleString('en-IN')}
+                          </span>
+                        </div>
+                        <div className="p-2 rounded-lg bg-white border border-gray-100">
+                          <span className="text-[10px] text-gray-500 block">Plumbing (5%)</span>
+                          <span className="text-xs font-extrabold text-gray-800">
+                            ₹ {Math.round(estimateData.breakdown.plumbing_cost || 0).toLocaleString('en-IN')}
+                          </span>
+                        </div>
+                        <div className="p-2 rounded-lg bg-white border border-gray-100">
+                          <span className="text-[10px] text-gray-500 block">Finishing &amp; Paint (11%)</span>
+                          <span className="text-xs font-extrabold text-gray-800">
+                            ₹ {Math.round((estimateData.breakdown.finishing_cost || 0) + (estimateData.breakdown.painting_cost || 0)).toLocaleString('en-IN')}
+                          </span>
+                        </div>
+                        <div className="p-2 rounded-lg bg-white border border-gray-100">
+                          <span className="text-[10px] text-gray-500 block">Overheads &amp; Misc (4%)</span>
+                          <span className="text-xs font-extrabold text-gray-800">
+                            ₹ {Math.round(estimateData.breakdown.approval_misc_cost || 0).toLocaleString('en-IN')}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
                   {/* Predicted Physical Quantities */}
                   <h4 className="text-xs font-bold uppercase tracking-wider text-gray-500 mb-3">
                     Physical Material Quantities (Trained ML Regressor Output)
                   </h4>
                   <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
-                    {[
-                      { name: 'Cement', qty: estimateData?.quantities?.ml?.cement_bags, unit: 'Bags' },
-                      { name: 'Steel / Rebar', qty: estimateData?.quantities?.ml?.steel_tons, unit: 'Tonnes' },
-                      { name: 'Bricks / Blocks', qty: estimateData?.quantities?.ml?.brick_count, unit: 'Pieces' },
-                      { name: 'Sand (M-Sand)', qty: estimateData?.quantities?.ml?.sand_tons
-                          ? Math.round(estimateData.quantities.ml.sand_tons * 25) : undefined, unit: 'Cu.Ft' },
-                      { name: 'Coarse Aggregate', qty: estimateData?.quantities?.ml?.aggregate_tons
-                          ? Math.round(estimateData.quantities.ml.aggregate_tons * 25) : undefined, unit: 'Cu.Ft' },
-                    ].map(mat => (
+                    {(() => {
+                      const q = estimateData?.quantities?.ml || estimateData?.quantities || {};
+                      return [
+                        { name: 'Cement', qty: q.cement_bags, unit: 'Bags' },
+                        { name: 'Steel / Rebar', qty: q.steel_tons != null ? q.steel_tons : (q.steel_kg ? (q.steel_kg / 1000).toFixed(2) : undefined), unit: 'Tonnes' },
+                        { name: 'Bricks / Blocks', qty: q.brick_count ?? q.bricks_count ?? q.bricks_pieces, unit: 'Pieces' },
+                        { name: 'Sand (M-Sand)', qty: q.sand_cft != null ? q.sand_cft : (q.sand_tons != null ? Math.round(q.sand_tons * 25) : (q.sand_cum != null ? Math.round(q.sand_cum * 35.31) : undefined)), unit: 'Cu.Ft' },
+                        { name: 'Coarse Aggregate', qty: q.aggregate_cft != null ? q.aggregate_cft : (q.aggregate_tons != null ? Math.round(q.aggregate_tons * 25) : (q.aggregate_cum != null ? Math.round(q.aggregate_cum * 35.31) : undefined)), unit: 'Cu.Ft' },
+                      ];
+                    })().map(mat => (
                       <div key={mat.name} className="p-3.5 rounded-xl border bg-gray-50">
                         <span className="text-xs font-bold text-gray-700 block">{mat.name}</span>
                         <span className="text-lg font-extrabold text-gray-900 block my-0.5">

@@ -12,8 +12,10 @@
   --blueprint:  #2B5CB0;
   --paper:      #FAFBFC;
   --concrete:   #E7E9EC;
-  --eco:        #3E8E5E;
   --alert:      #C4622D;
+  --rust:       #D4541A;
+  --rust-dark:  #B23B0E;
+  --rust-light: #FDF3EE;
 
   /* Unified Global Gradients */
   --global-gradient-hero: linear-gradient(135deg, #16213E 0%, #1A386A 55%, #10251A 100%);
@@ -38,13 +40,14 @@
   /* Shadows — flat, no drop shadow */
   --shadow-card: 0 0 0 1px var(--concrete);
 
-  /* Legacy aliases (keeps existing pages compiling) */
+  /* Legacy & Eco aliases */
   --bg-base:      var(--paper);
   --bg-card:      #FFFFFF;
   --bg-muted:     var(--concrete);
-  --green-deep:   var(--eco);
+  --eco:          #2E7D52;
+  --green-deep:   #1A4D2E;
   --green-mid:    #2E6B47;
-  --green-light:  var(--eco);
+  --green-light:  #3E8E5E;
   --green-muted:  #6B9B7A;
   --text-primary: var(--ink);
   --text-body:    #3D4760;
