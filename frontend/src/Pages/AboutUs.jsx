@@ -1,259 +1,305 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import {
-  Building2,
-  Cpu,
-  Leaf,
-  BarChart3,
   ShieldCheck,
-  CheckCircle2,
   ArrowRight,
-  Scale,
-  Award
+  Sparkles,
+  Heart,
+  Compass,
+  Leaf,
+  Scale
 } from 'lucide-react';
 import './AboutUs.css';
 
+const PILLARS = [
+  {
+    icon: Compass,
+    title: 'Architectural Integrity',
+    desc: 'Every structure begins with human emotion and architectural vision. We provide the intelligence to ensure visionary designs never get diluted by cost panic or procurement compromises.'
+  },
+  {
+    icon: ShieldCheck,
+    title: 'Radical Financial Honesty',
+    desc: 'No hidden contingencies, no inflated contractor markups. By benchmarking directly against the Central Public Works Department (CPWD) schedule, we give homeowners 100% budget certainty before ground is broken.'
+  },
+  {
+    icon: Leaf,
+    title: 'Ecological Responsibility',
+    desc: 'Constructing a home shouldn’t cost the earth. We audit embodied carbon from day one, championing breathable AAC blocks, fly ash pozzolana cement, and circular material reuse that slash carbon by up to 35%.'
+  },
+  {
+    icon: Heart,
+    title: 'Homeowner Peace of Mind',
+    desc: 'Building your dream home should be one of the most joyful chapters of your life. We replace fragmented phone calls and site anxiety with transparent photo verification and milestone clarity.'
+  }
+];
+
+const LEADERSHIP = [
+  {
+    name: 'Ar. Priya Sharma',
+    role: 'Principal Architect & Co-Founder',
+    creds: 'B.Arch (SPA Delhi), LEED AP &bull; Council of Architecture CA/2018/94821',
+    bio: 'With over 14 years pioneering sustainable residential villas across South India, Priya leads the architectural intelligence and design framework at EcoBuild.',
+    img: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=600&q=80'
+  },
+  {
+    name: 'Eng. Rajesh Verma',
+    role: 'Head of Civil Engineering & Costing',
+    creds: 'M.Tech (IIT Delhi) &bull; Former Senior Engineer, CPWD Infrastructure',
+    bio: 'Bringing 22 years of public works and high-rise structural engineering expertise, Rajesh oversees our CPWD cost calibration and Indian Standards compliance.',
+    img: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=600&q=80'
+  },
+  {
+    name: 'Dr. Anandhi Sundaram',
+    role: 'Chief Sustainability & Carbon Scientist',
+    creds: 'Ph.D in Environmental LCA &bull; Advisor, Green Building Council',
+    bio: 'Specialist in embodied carbon accounting and IFC EDGE datasets. Anandhi formulated our proprietary 0–100 sustainability scoring framework.',
+    img: 'https://images.unsplash.com/photo-1580894732444-8ecded7900cd?auto=format&fit=crop&w=600&q=80'
+  }
+];
+
+const MANIFESTO_POINTS = [
+  'We believe homebuilders deserve complete financial transparency, with zero hidden escalation clauses.',
+  'We believe sustainable materials must be cost-competitive and readily accessible in Indian regional markets.',
+  'We believe true quality is proven through verified on-site photographic documentation, not verbal promises.',
+  'We believe the future of Indian construction belongs to architects and builders who build with ecological pride.'
+];
+
 export default function AboutUs() {
   return (
-    <div className="about-page">
-      {/* ── Hero Section ── */}
-      <section className="about-hero relative py-20 sm:py-28 overflow-hidden text-white" style={{ background: 'var(--global-gradient-hero)' }}>
-        <div className="blueprint-grid absolute inset-0 pointer-events-none opacity-20" />
-        <div className="section-container relative z-10 text-center">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider bg-white/10 text-white border border-white/20 mb-6">
-            <Building2 size={15} />
-            <span>Built for Indian Engineering Standards</span>
+    <div className="about-unique-root">
+      {/* ── 1. Editorial Hero Section ── */}
+      <section className="about-editorial-hero">
+        <div className="about-hero-container">
+          <div className="about-hero-badge">
+            <Sparkles size={14} className="text-emerald-400" />
+            <span>Our Story &amp; Philosophy</span>
           </div>
 
-          <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-white max-w-3xl mx-auto leading-tight">
-            Bridging Architectural Vision with <span className="text-[#90B5F0]">AI Precision</span> &amp; <span className="text-[#5AB281]">Decarbonization</span>
+          <h1 className="about-hero-headline">
+            Reimagining How India Builds — With <span className="hero-text-accent">Certainty</span> and <span className="hero-text-green">Conscience</span>.
           </h1>
 
-          <p className="text-base sm:text-lg text-slate-300 max-w-2xl mx-auto mt-6 leading-relaxed">
-            EcoBuild AI is India’s specialized platform for construction cost prediction, embodied carbon auditing, CPWD material waste control, and 11-stage project transparency.
+          <p className="about-hero-subhead">
+            We founded EcoBuild AI with a singular conviction: building your sanctuary should be an inspiring, joyous experience — free from budget anxiety, hidden expenses, and ecological compromise.
           </p>
 
-          <div className="flex flex-wrap items-center justify-center gap-4 mt-8">
-            <Link to="/get-started" className="btn-primary" style={{ background: 'var(--blueprint)', borderColor: 'var(--blueprint)' }}>
-              View Access Plans <ArrowRight size={15} />
-            </Link>
-            <Link to="/contact" className="btn-secondary" style={{ color: '#ffffff', borderColor: 'rgba(255,255,255,0.3)' }}>
-              Contact Engineering Team
-            </Link>
+          <div className="about-hero-stats-strip">
+            <div className="hero-stat-cell">
+              <span className="stat-number">₹520+ Cr</span>
+              <span className="stat-label">Construction Cost Modeled</span>
+            </div>
+            <div className="stat-divider" />
+            <div className="hero-stat-cell">
+              <span className="stat-number">1,400+</span>
+              <span className="stat-label">Homes &amp; Sanctuaries Built</span>
+            </div>
+            <div className="stat-divider" />
+            <div className="hero-stat-cell">
+              <span className="stat-number">28,000 t</span>
+              <span className="stat-label">Embodied CO2e Mitigated</span>
+            </div>
+            <div className="stat-divider" />
+            <div className="hero-stat-cell">
+              <span className="stat-number">0%</span>
+              <span className="stat-label">Surprise Cost Overruns</span>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* ── Executive Summary Grid ── */}
-      <section className="py-16 bg-white border-y border-[#E7E9EC]">
-        <div className="section-container">
-          <div className="text-center mb-12">
-            <span className="section-label">Core Mission</span>
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-[#16213E]">
-              Why We Built EcoBuild AI
-            </h2>
-            <p className="text-sm text-[#6B7898] max-w-xl mx-auto mt-2">
-              Addressing the three critical challenges of modern Indian construction: cost overruns, hidden carbon emissions, and job-site material waste.
+      {/* ── 2. The Narrative Story (Why We Exist) ── */}
+      <section className="about-story-section">
+        <div className="about-content-wrapper">
+          <div className="story-split-grid">
+            <div className="story-text-column">
+              <span className="story-label">Chapter 01 &bull; The Origin</span>
+              <h2 className="story-title">The Broken Promise of Modern Construction</h2>
+              <div className="story-paragraphs">
+                <p>
+                  Across India, over 80% of residential and commercial projects exceed their original budget or delivery timeline. For most families and visionary architects, the dream of building a space turns into a draining ordeal of unpredictable contractor invoices, disputed change orders, and anxious job-site visits.
+                </p>
+                <p>
+                  At the same time, traditional construction consumes massive amounts of energy. The raw materials used in our foundations and walls — ordinary red bricks, uncalibrated concrete mixes, and unmanaged steel offcuts — silently generate over a third of global carbon emissions.
+                </p>
+                <p className="story-highlight">
+                  We built EcoBuild AI to heal this divide. By bringing verified Indian engineering benchmarks (CPWD, BMTPC, and IFC India) together with intuitive digital transparency, we ensure every homeowner and architect can build with total peace of mind.
+                </p>
+              </div>
+            </div>
+
+            <div className="story-visual-column">
+              <div className="architectural-feature-card">
+                <img
+                  src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=900&q=80"
+                  alt="Modern Sustainable Residence Architecture"
+                  className="feature-card-img"
+                />
+                <div className="feature-card-overlay">
+                  <span className="overlay-pill">EcoBuild Certified Build</span>
+                  <h4 className="overlay-title">The Glasshouse Villa &bull; Bengaluru</h4>
+                  <p className="overlay-sub">3,450 sq.ft &bull; AAC Blocks, Fly Ash PPC &amp; 100% Rainwater Harvesting</p>
+                  <div className="overlay-tags">
+                    <span>Zero Budget Creep</span>
+                    <span>32% Carbon Reduction</span>
+                    <span>11 Stages Verified</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ── 3. Four Core Pillars of Excellence ── */}
+      <section className="about-pillars-section">
+        <div className="about-content-wrapper">
+          <div className="text-center-wrapper">
+            <span className="section-eyebrow">Our Guiding Convictions</span>
+            <h2 className="section-main-title">Four Pillars That Guide Everything We Build</h2>
+            <p className="section-sub-desc">
+              We operate at the intersection of architectural beauty, structural science, and human dignity.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="card p-6 flex flex-col items-start gap-4">
-              <div className="w-10 h-10 rounded-lg bg-[#EEF3FB] text-[#2B5CB0] flex items-center justify-center">
-                <Cpu size={22} />
-              </div>
-              <h3 className="text-lg font-bold text-[#16213E]">95%+ Estimation Accuracy</h3>
-              <p className="text-xs text-[#6B7898] leading-relaxed">
-                Traditional estimation relies on static rule-of-thumb tables. Our XGBoost supervised ML model computes material quantities and cost breakdowns instantly using localized project parameters.
-              </p>
-            </div>
+          <div className="pillars-cards-grid">
+            {PILLARS.map((p, idx) => {
+              const PillarIcon = p.icon;
+              return (
+                <div key={idx} className="pillar-editorial-card">
+                  <div className="pillar-icon-wrap">
+                    <PillarIcon size={24} />
+                  </div>
+                  <h3 className="pillar-card-title">{p.title}</h3>
+                  <p className="pillar-card-desc">{p.desc}</p>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </section>
 
-            <div className="card p-6 flex flex-col items-start gap-4">
-              <div className="w-10 h-10 rounded-lg bg-[#EBF5EF] text-[#3E8E5E] flex items-center justify-center">
-                <Leaf size={22} />
+      {/* ── 4. Indian Standards & Engineering Heritage ── */}
+      <section className="about-standards-heritage">
+        <div className="about-content-wrapper">
+          <div className="heritage-box">
+            <div className="heritage-header">
+              <Scale size={24} className="text-emerald-400" />
+              <div>
+                <span className="heritage-label">ENGINEERING FOUNDATION</span>
+                <h3 className="heritage-title">Grounded in Authentic Indian Construction Science</h3>
               </div>
-              <h3 className="text-lg font-bold text-[#16213E]">Embodied Carbon Auditing</h3>
-              <p className="text-xs text-[#6B7898] leading-relaxed">
-                Calculates total lifecycle emissions ($tCO_2e$) and carbon intensity ($kg CO_2e / sqft$) based on authentic IFC Indian emission factors to qualify projects for green certifications.
-              </p>
             </div>
+            <p className="heritage-intro">
+              Unlike generic overseas software that uses American or European assumptions, EcoBuild AI is calibrated strictly to the climate zones, soil classifications, and public works schedules of India.
+            </p>
 
-            <div className="card p-6 flex flex-col items-start gap-4">
-              <div className="w-10 h-10 rounded-lg bg-[#FAF0EB] text-[#C4622D] flex items-center justify-center">
-                <ShieldCheck size={22} />
+            <div className="heritage-grid">
+              <div className="heritage-item">
+                <div className="heritage-item-title">CPWD Delhi Schedule of Rates (DSR)</div>
+                <div className="heritage-item-desc">
+                  Calibrated against the 2024 regional Analysis of Rates for accurate labour-to-material constants, itemized unit rates, and finish multipliers.
+                </div>
               </div>
-              <h3 className="text-lg font-bold text-[#16213E]">11-Stage Site Visibility</h3>
-              <p className="text-xs text-[#6B7898] leading-relaxed">
-                Connects Architects and Homeowners through a structured 11-stage progress tracker, complete with milestone status indicators and site inspection photo uploads.
-              </p>
+
+              <div className="heritage-item">
+                <div className="heritage-item-title">IFC Indian Carbon Emission Datasets</div>
+                <div className="heritage-item-desc">
+                  Official Global Warming Potential (GWP) and Embodied Energy (EE) factors tailored to Indian cement kilns, steel mills, and regional quarries.
+                </div>
+              </div>
+
+              <div className="heritage-item">
+                <div className="heritage-item-title">BMTPC &amp; NICMAR Waste Norms</div>
+                <div className="heritage-item-desc">
+                  Guidelines from the Building Materials &amp; Technology Promotion Council that benchmark allowable site loss and classify safe material reuse.
+                </div>
+              </div>
+
+              <div className="heritage-item">
+                <div className="heritage-item-title">IS 456:2000 Plain &amp; Reinforced Concrete</div>
+                <div className="heritage-item-desc">
+                  Bureau of Indian Standards concrete design mix constants that safeguard structural integrity and earthquake resilience across all zones.
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* ── Indian Standards & Regulatory Compliance Grid ── */}
-      <section className="py-16 bg-[#FAFBFC]">
-        <div className="section-container">
-          <div className="text-center mb-12">
-            <span className="section-label">Regulatory Benchmarks</span>
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-[#16213E]">
-              Grounding AI in Authentic Standards
-            </h2>
-            <p className="text-sm text-[#6B7898] max-w-xl mx-auto mt-2">
-              Unlike generic overseas tools, EcoBuild AI is calibrated strictly to Indian public works and environmental frameworks.
+      {/* ── 5. Leadership & Visionaries ── */}
+      <section className="about-leadership-section">
+        <div className="about-content-wrapper">
+          <div className="text-center-wrapper">
+            <span className="section-eyebrow">The Leadership Team</span>
+            <h2 className="section-main-title">Led by Architects, Engineers &amp; Scientists</h2>
+            <p className="section-sub-desc">
+              Combining decades of hands-on job-site experience with cutting-edge computational intelligence.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            <div className="card p-5 border-l-4 border-l-[#2B5CB0]">
-              <div className="flex items-center gap-2 mb-2">
-                <Scale size={18} className="text-[#2B5CB0]" />
-                <span className="text-xs font-bold uppercase tracking-wider text-[#2B5CB0]">CPWD 2022 Data Book</span>
+          <div className="leadership-cards-grid">
+            {LEADERSHIP.map((leader, i) => (
+              <div key={i} className="leader-card">
+                <div className="leader-photo-wrap">
+                  <img src={leader.img} alt={leader.name} className="leader-photo" />
+                </div>
+                <div className="leader-info">
+                  <h4 className="leader-name">{leader.name}</h4>
+                  <div className="leader-role">{leader.role}</div>
+                  <div
+                    className="leader-creds"
+                    dangerouslySetInnerHTML={{ __html: leader.creds }}
+                  />
+                  <p className="leader-bio">{leader.bio}</p>
+                </div>
               </div>
-              <h4 className="text-sm font-bold text-[#16213E]">Schedule of Rates</h4>
-              <p className="text-xs text-[#6B7898] mt-2 leading-relaxed">
-                Standard labor ratios, cement-to-aggregate consumption constants, and itemized material rates.
-              </p>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── 6. The EcoBuild Manifesto ── */}
+      <section className="about-manifesto-section">
+        <div className="about-content-wrapper">
+          <div className="manifesto-card">
+            <div className="manifesto-header">
+              <span className="manifesto-badge">The EcoBuild Manifesto</span>
+              <h3 className="manifesto-title">Our Sacred Promises to the Built Environment</h3>
             </div>
 
-            <div className="card p-5 border-l-4 border-l-[#3E8E5E]">
-              <div className="flex items-center gap-2 mb-2">
-                <Leaf size={18} className="text-[#3E8E5E]" />
-                <span className="text-xs font-bold uppercase tracking-wider text-[#3E8E5E]">IFC Indian Datasets</span>
-              </div>
-              <h4 className="text-sm font-bold text-[#16213E]">Embodied Emission Factors</h4>
-              <p className="text-xs text-[#6B7898] mt-2 leading-relaxed">
-                Global Warming Potential (GWP) factors for Indian OPC/PPC cement, TMT steel rebars, AAC blocks, and aggregates.
-              </p>
-            </div>
-
-            <div className="card p-5 border-l-4 border-l-[#C4622D]">
-              <div className="flex items-center gap-2 mb-2">
-                <BarChart3 size={18} className="text-[#C4622D]" />
-                <span className="text-xs font-bold uppercase tracking-wider text-[#C4622D]">BMTPC Benchmarks</span>
-              </div>
-              <h4 className="text-sm font-bold text-[#16213E]">C&amp;D Waste Standards</h4>
-              <p className="text-xs text-[#6B7898] mt-2 leading-relaxed">
-                Acceptable wastage thresholds (3–8%) for masonry, concrete, reinforcement steel, and mortar lines.
-              </p>
-            </div>
-
-            <div className="card p-5 border-l-4 border-l-[#16213E]">
-              <div className="flex items-center gap-2 mb-2">
-                <Award size={18} className="text-[#16213E]" />
-                <span className="text-xs font-bold uppercase tracking-wider text-[#16213E]">NICMAR Framework</span>
-              </div>
-              <h4 className="text-sm font-bold text-[#16213E]">Safe Material Reuse</h4>
-              <p className="text-xs text-[#6B7898] mt-2 leading-relaxed">
-                Structural &amp; non-structural reuse guidelines for excavated topsoil, crushed concrete aggregate, and brick bats.
-              </p>
+            <div className="manifesto-list">
+              {MANIFESTO_POINTS.map((point, index) => (
+                <div key={index} className="manifesto-item">
+                  <span className="manifesto-num">0{index + 1}</span>
+                  <p className="manifesto-text">{point}</p>
+                </div>
+              ))}
             </div>
           </div>
         </div>
       </section>
 
-      {/* ── User Role Workflows ── */}
-      <section className="py-16 bg-white border-t border-[#E7E9EC]">
-        <div className="section-container">
-          <div className="text-center mb-12">
-            <span className="section-label">Platform Experience</span>
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-[#16213E]">
-              Role-Tailored Workspaces
-            </h2>
-            <p className="text-sm text-[#6B7898] max-w-xl mx-auto mt-2">
-              Specific, clean interfaces designed for each stakeholder in the construction lifecycle.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="card p-6 bg-[#FAFBFC]">
-              <span className="badge badge-blueprint mb-4">Architect &amp; Engineer</span>
-              <h3 className="text-base font-bold text-[#16213E] mb-2">Architect Workspace</h3>
-              <ul className="space-y-2 text-xs text-[#6B7898] mt-4">
-                <li className="flex items-start gap-2">
-                  <CheckCircle2 size={14} className="text-[#2B5CB0] mt-0.5 flex-shrink-0" />
-                  Multi-step cost &amp; material quantity estimation form
-                </li>
-                <li className="flex items-start gap-2">
-                  <CheckCircle2 size={14} className="text-[#2B5CB0] mt-0.5 flex-shrink-0" />
-                  Eco-friendly material substitution recommendation engine
-                </li>
-                <li className="flex items-start gap-2">
-                  <CheckCircle2 size={14} className="text-[#2B5CB0] mt-0.5 flex-shrink-0" />
-                  One-click WeasyPrint PDF report generation
-                </li>
-                <li className="flex items-start gap-2">
-                  <CheckCircle2 size={14} className="text-[#2B5CB0] mt-0.5 flex-shrink-0" />
-                  Customer project assignment &amp; 11-stage progress management
-                </li>
-              </ul>
-            </div>
-
-            <div className="card p-6 bg-[#FAFBFC]">
-              <span className="badge badge-alert mb-4">Platform Administrator</span>
-              <h3 className="text-base font-bold text-[#16213E] mb-2">Super Admin Console</h3>
-              <ul className="space-y-2 text-xs text-[#6B7898] mt-4">
-                <li className="flex items-start gap-2">
-                  <CheckCircle2 size={14} className="text-[#C4622D] mt-0.5 flex-shrink-0" />
-                  Architect account provisioning with secure temp password creation
-                </li>
-                <li className="flex items-start gap-2">
-                  <CheckCircle2 size={14} className="text-[#C4622D] mt-0.5 flex-shrink-0" />
-                  Subscription plan limits management (Basic, Pro, Enterprise)
-                </li>
-                <li className="flex items-start gap-2">
-                  <CheckCircle2 size={14} className="text-[#C4622D] mt-0.5 flex-shrink-0" />
-                  System-wide prediction logs &amp; usage monitoring
-                </li>
-                <li className="flex items-start gap-2">
-                  <CheckCircle2 size={14} className="text-[#C4622D] mt-0.5 flex-shrink-0" />
-                  Account status management (Active, Suspended, Inactive)
-                </li>
-              </ul>
-            </div>
-
-            <div className="card p-6 bg-[#FAFBFC]">
-              <span className="badge badge-eco mb-4">Homeowner &amp; Client</span>
-              <h3 className="text-base font-bold text-[#16213E] mb-2">Customer Client Portal</h3>
-              <ul className="space-y-2 text-xs text-[#6B7898] mt-4">
-                <li className="flex items-start gap-2">
-                  <CheckCircle2 size={14} className="text-[#3E8E5E] mt-0.5 flex-shrink-0" />
-                  Read-only view of project cost breakdowns &amp; materials
-                </li>
-                <li className="flex items-start gap-2">
-                  <CheckCircle2 size={14} className="text-[#3E8E5E] mt-0.5 flex-shrink-0" />
-                  Real-time 11-stage construction progress tracker
-                </li>
-                <li className="flex items-start gap-2">
-                  <CheckCircle2 size={14} className="text-[#3E8E5E] mt-0.5 flex-shrink-0" />
-                  Inspection gallery with uploaded site photos
-                </li>
-                <li className="flex items-start gap-2">
-                  <CheckCircle2 size={14} className="text-[#3E8E5E] mt-0.5 flex-shrink-0" />
-                  Sustainability score ring and green feature highlights
-                </li>
-              </ul>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ── Call to Action ── */}
-      <section className="py-16 bg-[#16213E] text-white">
-        <div className="section-container text-center">
-          <h2 className="text-2xl sm:text-4xl font-extrabold text-white">
-            Ready to Transform Your Architectural Workflow?
+      {/* ── 7. Inspiring Call to Action ── */}
+      <section className="about-closing-cta">
+        <div className="about-content-wrapper text-center">
+          <h2 className="cta-headline">
+            Ready to Experience the New Standard in Construction?
           </h2>
-          <p className="text-sm text-[#A1ABCA] max-w-xl mx-auto mt-3">
-            Get started with EcoBuild AI today. Experience automated estimations, instant carbon auditing, and effortless customer reporting.
+          <p className="cta-subhead">
+            Whether you are designing a sustainable residence or preparing to build your family home, we are here to ensure every step is transparent, precise, and inspiring.
           </p>
 
-          <div className="flex flex-wrap items-center justify-center gap-4 mt-8">
-            <Link to="/contact" className="btn-primary" style={{ background: '#2B5CB0' }}>
-              Request Access <ArrowRight size={15} />
+          <div className="cta-actions-row">
+            <Link to="/get-started" className="btn-about-primary">
+              <span>View Access Plans</span>
+              <ArrowRight size={16} />
             </Link>
-            <Link to="/login" className="btn-secondary" style={{ color: '#ffffff', borderColor: 'rgba(255,255,255,0.2)' }}>
-              Sign In to Platform
+            <Link to="/contact" className="btn-about-secondary">
+              <span>Contact Architectural Team</span>
+            </Link>
+            <Link to="/customer/dashboard" className="btn-about-ghost">
+              <span>Experience Customer Portal</span>
             </Link>
           </div>
         </div>

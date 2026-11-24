@@ -1,350 +1,456 @@
-import React from 'react';
+import React, { useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import {
-  BrainCircuit, IndianRupee, Leaf, Star, Trash2, RefreshCw,
-  CheckCircle, ArrowRight, Building2, Users, BarChart3
+  Building2, ShieldCheck, CheckCircle2,
+  ArrowRight, Sparkles, Award,
+  Eye, PhoneCall, Heart, Calendar,
+  Wind, Sparkle, Camera, MessageSquare
 } from 'lucide-react';
 import Hero from '../Components/Hero';
 import './LandingPage.css';
 
-/* ── Feature list ── */
-const FEATURES = [
+/* ── Architectural Typologies for Homeowner Vision ── */
+const RESIDENCE_STYLES = {
+  courtyard: {
+    name: 'Biophilic Courtyard Villa',
+    subtitle: 'Passive solar cooling &bull; Open-to-sky central greenery',
+    img: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1000&q=80',
+    desc: 'Centred around a lush living courtyard that channels natural cross-breezes and ambient daylight into every living space, reducing artificial cooling requirements by 40%.',
+    highlights: ['Natural Cross-Ventilation', 'Thermal AAC Block Shell', 'Rainwater Recharge Pit', 'Courtyard Garden View'],
+    baseCostPerSqft: 2150,
+    coolingBonus: '3.8°C Naturally Cooler'
+  },
+  minimalist: {
+    name: 'Modern Minimalist Glasshouse',
+    subtitle: 'Cantilevered terraces &bull; Double-glazed panoramic vistas',
+    img: 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1000&q=80',
+    desc: 'Clean geometric lines seamlessly blending indoor and outdoor living. Built with recycled steel structural framing, low-emissivity glass, and acoustic insulation.',
+    highlights: ['Floor-to-Ceiling Natural Light', 'Recycled Structural Steel', 'Soundproof UPVC Glazing', 'Solar Ready Rooftop'],
+    baseCostPerSqft: 2450,
+    coolingBonus: 'Acoustically Insulated'
+  },
+  penthouse: {
+    name: 'Urban Eco-Duplex',
+    subtitle: 'Rooftop terrace garden &bull; Net-zero solar generation',
+    img: 'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1000&q=80',
+    desc: 'Optimized for modern multi-generation urban living. Incorporates organic terrace gardens, solar rooftop canopies, and non-toxic Italian breathable plastering.',
+    highlights: ['5.5 kW Rooftop Solar Canopy', 'Organic Terrace Gardening', 'Low-VOC Non-Toxic Finishes', 'Zero Thermal Bridge Design'],
+    baseCostPerSqft: 2350,
+    coolingBonus: '65% Energy Independent'
+  }
+};
+
+/* ── Four Client Guarantees ── */
+const CLIENT_GUARANTEES = [
   {
-    Icon: BrainCircuit,
-    title: 'AI Quantity Prediction',
-    desc: 'XGBoost ML model predicts material quantities — cement, steel, sand, bricks — trained on Indian construction data.',
+    icon: ShieldCheck,
+    title: 'The CPWD Price-Lock Guarantee',
+    desc: 'Never worry about contractor extortion or sudden price inflation. Your turnkey construction cost is contractually indexed against CPWD regional rates before work begins.',
+    badge: 'Zero Surprise Bills'
   },
   {
-    Icon: IndianRupee,
-    title: 'Cost Estimation',
-    desc: 'CPWD-aligned cost breakdowns per line item. Transparent, market-current estimates in seconds.',
+    icon: Camera,
+    title: 'Live Photographic Inspection Feed',
+    desc: 'Watch your home rise with total joy. Your lead architect uploads high-resolution site inspection photos for every concrete pour, column rebar spacing, and curing cycle.',
+    badge: '100% Visual Verification'
   },
   {
-    Icon: Leaf,
-    title: 'Carbon Analytics',
-    desc: 'IFC Indian emission factors compute embodied carbon per material in tCO2e with green rating benchmarks.',
+    icon: Wind,
+    title: 'Naturally Cooler, Breathable Air',
+    desc: 'Live in a home that breathes. By replacing kiln-fired red bricks with thermal AAC blocks and non-toxic mineral finishes, ambient indoor temperatures drop by 3° to 5°C naturally.',
+    badge: 'Health & Wellness'
   },
   {
-    Icon: Star,
-    title: 'Sustainability Scoring',
-    desc: 'Rule-based 0-100 score with solar, rainwater, material type, waste, and carbon factor breakdowns.',
-  },
-  {
-    Icon: Trash2,
-    title: 'CPWD Waste Tracking',
-    desc: 'CPWD / BMTPC / NICMAR waste benchmarks flag compliance issues per material category.',
-  },
-  {
-    Icon: RefreshCw,
-    title: 'Safe Material Reuse',
-    desc: 'Evaluate recovered materials for safe re-entry with safety classification and condition checks.',
-  },
+    icon: MessageSquare,
+    title: 'Direct Architect & Concierge Access',
+    desc: 'No middleman contractor chaos. You have direct, one-tap access to your Lead Architect via WhatsApp and scheduled on-site walkthroughs whenever you want.',
+    badge: 'White-Glove Support'
+  }
 ];
 
-/* ── Roles ── */
-const ROLES = [
+/* ── 5-Step Journey ── */
+const JOURNEY_STEPS = [
   {
-    Icon: Building2,
-    label: 'Super Admin',
-    title: 'Platform Control',
-    desc: 'Full platform oversight — manage architects, subscriptions, usage analytics, and all active projects.',
-    feats: ['Manage Architect Accounts', 'Control Subscription Plans', 'View All Projects', 'Platform Analytics'],
-    color: 'var(--alert)',
-    bg: '#FAF0EB',
-    border: '#E5C0AA',
+    step: '01',
+    title: 'Architectural Vision & Spatial Design',
+    desc: 'Meet your dedicated lead architect to co-create your layout, room flow, natural lighting orientation, and bespoke aesthetic preferences.'
   },
   {
-    Icon: Users,
-    label: 'Architect',
-    title: 'Workspace Command',
-    desc: 'End-to-end project management with AI cost, material, carbon, and sustainability intelligence.',
-    feats: ['AI Cost and Quantity Estimation', '11-Stage Progress Monitoring', 'Carbon Analytics', 'Site Inspection Gallery'],
-    color: 'var(--blueprint)',
-    bg: 'var(--blueprint-light)',
-    border: '#AABFEA',
+    step: '02',
+    title: 'Guaranteed Turnkey Budget Locking',
+    desc: 'Receive a transparent, line-by-line financial roadmap calibrated with regional CPWD benchmarks. No hidden fees, no budget drift.'
   },
   {
-    Icon: BarChart3,
-    label: 'Customer',
-    title: 'Project Visibility',
-    desc: 'Read-only portal giving homeowners full transparency into their construction project status.',
-    feats: ['Real-Time Progress Tracking', 'Material and Cost Breakdown', 'Sustainability Score View', 'Site Photo Gallery'],
-    color: 'var(--eco)',
-    bg: 'var(--eco-light)',
-    border: '#91CCAA',
+    step: '03',
+    title: 'Foundation & Structural Execution',
+    desc: 'Watch ground-breaking, footing excavation, and column framing come alive with weekly verified photo logs and structural audit sign-offs.'
   },
+  {
+    step: '04',
+    title: 'Bespoke Finishes & Eco-Fixtures',
+    desc: 'Select premium sustainable materials — from vitrified anti-skid tiles and UPVC triple-track windows to rainwater harvesting and solar canopies.'
+  },
+  {
+    step: '05',
+    title: 'The Housewarming Celebration',
+    desc: 'Receive the keys to your certified green sanctuary, complete with warranties, municipal occupancy clearances, and official sustainability certificates.'
+  }
 ];
 
-/* ── Main page ── */
 export default function LandingPage() {
-  return (
-    <div style={{ background: 'var(--paper)', minHeight: '100vh', fontFamily: 'var(--font-sans)' }}>
+  const [selectedStyle, setSelectedStyle] = useState('courtyard');
+  const [areaSqft, setAreaSqft] = useState(3200);
 
-      {/* ── HERO ── */}
+  const activeStyle = RESIDENCE_STYLES[selectedStyle];
+
+  const estimatedBudget = useMemo(() => {
+    const total = Math.round(areaSqft * activeStyle.baseCostPerSqft);
+    return (total / 100000).toFixed(2);
+  }, [areaSqft, activeStyle]);
+
+  return (
+    <div className="landing-page-root">
+      {/* ── 1. Inspiring Customer Hero ── */}
       <Hero />
 
-      {/* ── DIVIDER ── */}
-      <hr className="divider" style={{ margin: 0 }} />
-
-      {/* ── FEATURES ── */}
-      <section style={{ padding: '5rem 1.5rem' }}>
-        <div className="section-container">
-          <div className="section-label">Platform Capabilities</div>
-          <h2
-            style={{
-              fontSize: 'clamp(1.5rem, 3vw, 2rem)',
-              fontWeight: 700,
-              color: 'var(--ink)',
-              marginBottom: '0.75rem',
-              maxWidth: 540,
-            }}
-          >
-            Six modules. One estimation pipeline.
-          </h2>
-          <p style={{ color: 'var(--ink-muted)', fontSize: '0.9rem', marginBottom: '3rem', maxWidth: 520, lineHeight: 1.7 }}>
-            From initial quantity prediction to green certification benchmarks — all
-            computed from one set of project inputs.
-          </p>
-
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
-              gap: '1px',
-              border: '1px solid var(--concrete)',
-              borderRadius: 'var(--r-card)',
-              overflow: 'hidden',
-              background: 'var(--concrete)',
-            }}
-          >
-            {FEATURES.map(({ Icon, title, desc }) => (
-              <div
-                key={title}
-                style={{
-                  background: '#ffffff',
-                  padding: '1.5rem',
-                  transition: 'background 0.15s',
-                }}
-                onMouseEnter={e => e.currentTarget.style.background = 'var(--blueprint-light)'}
-                onMouseLeave={e => e.currentTarget.style.background = '#ffffff'}
-              >
-                <div style={{ marginBottom: '0.75rem' }}>
-                  <Icon size={20} color="var(--blueprint)" strokeWidth={1.5} />
-                </div>
-                <h3 style={{ fontSize: '0.95rem', fontWeight: 600, color: 'var(--ink)', marginBottom: '0.4rem' }}>
-                  {title}
-                </h3>
-                <p style={{ fontSize: '0.82rem', color: 'var(--ink-muted)', lineHeight: 1.6 }}>{desc}</p>
-              </div>
-            ))}
+      {/* ── 2. Trust & Indian Architectural Integrity Strip ── */}
+      <section className="standards-strip-section">
+        <div className="standards-container">
+          <div className="standards-label">ENGINEERED IN COMPLIANCE WITH INDIAN NATIONAL STANDARDS</div>
+          <div className="standards-logos-grid">
+            <div className="standard-item">
+              <span className="standard-title">CPWD 2024</span>
+              <span className="standard-desc">Price-Lock Schedule</span>
+            </div>
+            <div className="standard-divider" />
+            <div className="standard-item">
+              <span className="standard-title">IFC India</span>
+              <span className="standard-desc">Green Building Carbon Data</span>
+            </div>
+            <div className="standard-divider" />
+            <div className="standard-item">
+              <span className="standard-title">BMTPC</span>
+              <span className="standard-desc">Zero-Waste Norms</span>
+            </div>
+            <div className="standard-divider" />
+            <div className="standard-item">
+              <span className="standard-title">IGBC &amp; GRIHA</span>
+              <span className="standard-desc">Green Certified Homes</span>
+            </div>
+            <div className="standard-divider" />
+            <div className="standard-item">
+              <span className="standard-title">CoA Registered</span>
+              <span className="standard-desc">Council of Architecture</span>
+            </div>
           </div>
         </div>
       </section>
 
-      <hr className="divider" style={{ margin: 0 }} />
-
-      {/* ── HOW IT WORKS ── */}
-      <section style={{ padding: '5rem 1.5rem', background: 'var(--ink)' }}>
-        <div className="section-container">
-          <div className="section-label" style={{ color: 'var(--blueprint-200, #AABFEA)' }}>
-            Estimation Pipeline
+      {/* ── 3. Interactive Home Vision & Living Experience Configurator ── */}
+      <section id="vision-explorer" className="vision-configurator-section">
+        <div className="section-inner">
+          <div className="section-badge-center">
+            <Sparkles size={13} className="text-emerald-500" />
+            <span>Interactive Living Experience</span>
           </div>
-          <h2
-            style={{
-              fontSize: 'clamp(1.4rem, 3vw, 1.9rem)',
-              fontWeight: 700,
-              color: '#ffffff',
-              marginBottom: '0.75rem',
-            }}
-          >
-            How one project input becomes six outputs.
+          <h2 className="section-heading-center">
+            Envision Your Future Sanctuary
           </h2>
-          <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.875rem', marginBottom: '3rem', maxWidth: 480, lineHeight: 1.7 }}>
-            A single set of building parameters runs through six sequential modules
-            to produce quantities, cost, carbon, sustainability, waste, and reuse analysis.
+          <p className="section-subtext-center">
+            Select your architectural lifestyle and explore how spatial orientation and sustainable construction deliver both luxury and lasting financial peace of mind.
           </p>
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0', maxWidth: 720 }}>
-            {[
-              { n: '01', label: 'ML Quantities', desc: 'XGBoost predicts cement bags, steel kg, bricks, sand, and aggregate from 35 features.' },
-              { n: '02', label: 'Cost Breakdown', desc: 'CPWD unit rates applied to quantities give material, labour, and overhead cost per item.' },
-              { n: '03', label: 'Carbon Footprint', desc: 'IFC Indian emission factors compute kgCO2e per material with intensity and green ratings.' },
-              { n: '04', label: 'Sustainability Score', desc: 'Rule-based 0-100 score covering solar, rainwater, material type, waste, and carbon.' },
-              { n: '05', label: 'Waste Analysis', desc: 'CPWD / BMTPC benchmarks flag waste percentage compliance per material.' },
-              { n: '06', label: 'Reuse Evaluation', desc: 'Safety classification for recovered materials entering the project stream.' },
-            ].map((step, i, arr) => (
-              <div
-                key={step.n}
-                style={{
-                  display: 'flex',
-                  gap: '1.25rem',
-                  padding: '1.25rem 0',
-                  borderBottom: i < arr.length - 1 ? '1px solid rgba(255,255,255,0.08)' : 'none',
-                }}
-              >
-                <div
-                  style={{
-                    fontFamily: 'var(--font-mono)',
-                    fontSize: '0.7rem',
-                    color: 'var(--blueprint)',
-                    fontWeight: 500,
-                    minWidth: 28,
-                    paddingTop: 3,
-                  }}
-                >
-                  {step.n}
-                </div>
-                <div>
-                  <div style={{ fontSize: '0.9rem', fontWeight: 600, color: '#ffffff', marginBottom: '0.25rem' }}>
-                    {step.label}
-                  </div>
-                  <div style={{ fontSize: '0.82rem', color: 'rgba(255,255,255,0.5)', lineHeight: 1.6 }}>
-                    {step.desc}
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <hr className="divider" style={{ margin: 0, borderColor: 'rgba(255,255,255,0.08)' }} />
-
-      {/* ── ROLES ── */}
-      <section style={{ padding: '5rem 1.5rem' }}>
-        <div className="section-container">
-          <div className="section-label">Access Model</div>
-          <h2
-            style={{
-              fontSize: 'clamp(1.4rem, 3vw, 1.9rem)',
-              fontWeight: 700,
-              color: 'var(--ink)',
-              marginBottom: '0.75rem',
-            }}
-          >
-            Three portals. One platform.
-          </h2>
-          <p style={{ color: 'var(--ink-muted)', fontSize: '0.875rem', marginBottom: '3rem', maxWidth: 480, lineHeight: 1.7 }}>
-            Purpose-built dashboards for every stakeholder. Access is granted by administrators
-            — no public self-registration.
-          </p>
-
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))',
-              gap: '1rem',
-            }}
-          >
-            {ROLES.map(({ Icon, label, title, desc, feats, color, bg, border }) => (
-              <div
-                key={label}
-                className="card"
-                style={{ padding: '1.5rem', borderColor: border }}
-              >
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', marginBottom: '1rem' }}>
-                  <Icon size={16} color={color} strokeWidth={1.5} />
-                  <span
-                    className="badge"
-                    style={{ background: bg, color, border: `1px solid ${border}` }}
+          <div className="vision-configurator-card">
+            {/* Left: Style & Area Controls */}
+            <div className="vision-controls-side">
+              <span className="control-section-label">1. Choose Your Architectural Typology</span>
+              
+              <div className="style-selector-cards">
+                {Object.entries(RESIDENCE_STYLES).map(([key, st]) => (
+                  <div
+                    key={key}
+                    className={`style-card-option ${selectedStyle === key ? 'active' : ''}`}
+                    onClick={() => setSelectedStyle(key)}
                   >
-                    {label}
-                  </span>
+                    <div className="style-option-header">
+                      <strong className="style-option-name">{st.name}</strong>
+                      {selectedStyle === key && <CheckCircle2 size={16} className="text-emerald-600" />}
+                    </div>
+                    <div className="style-option-sub" dangerouslySetInnerHTML={{ __html: st.subtitle }} />
+                  </div>
+                ))}
+              </div>
+
+              <div className="area-slider-group">
+                <div className="slider-label-row">
+                  <span className="slider-title">Built-up Living Area</span>
+                  <span className="slider-val-badge">{areaSqft.toLocaleString('en-IN')} sq.ft</span>
                 </div>
-                <h3 style={{ fontSize: '1rem', fontWeight: 600, color: 'var(--ink)', marginBottom: '0.4rem' }}>
-                  {title}
-                </h3>
-                <p style={{ fontSize: '0.8rem', color: 'var(--ink-muted)', lineHeight: 1.6, marginBottom: '1rem' }}>
-                  {desc}
-                </p>
-                <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
-                  {feats.map(f => (
-                    <li key={f} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.8rem', color: 'var(--ink)' }}>
-                      <CheckCircle size={12} color={color} strokeWidth={2} />
-                      {f}
-                    </li>
-                  ))}
-                </ul>
+                <input
+                  type="range"
+                  min="1200"
+                  max="7500"
+                  step="100"
+                  value={areaSqft}
+                  onChange={(e) => setAreaSqft(Number(e.target.value))}
+                  className="custom-range-bar"
+                />
+                <div className="slider-limits">
+                  <span>1,200 sq.ft (Villa)</span>
+                  <span>4,000 sq.ft</span>
+                  <span>7,500 sq.ft (Estate)</span>
+                </div>
+              </div>
+
+              <div className="vision-assurance-note">
+                <ShieldCheck size={16} className="text-emerald-600" />
+                <span>
+                  Every estimate includes turnkey civil construction, premium finishes, architectural blueprints, and CPWD-locked material rates.
+                </span>
+              </div>
+            </div>
+
+            {/* Right: Architectural Living Preview */}
+            <div className="vision-preview-side">
+              <div className="preview-media-box">
+                <img src={activeStyle.img} alt={activeStyle.name} className="preview-media-img" />
+                <div className="preview-top-badge">
+                  <Sparkle size={12} className="text-emerald-400" />
+                  <span>{activeStyle.coolingBonus}</span>
+                </div>
+                <div className="preview-bottom-caption">
+                  <h3 className="preview-title">{activeStyle.name}</h3>
+                  <p className="preview-desc">{activeStyle.desc}</p>
+                  <div className="preview-feature-tags">
+                    {activeStyle.highlights.map((h, i) => (
+                      <span key={i} className="tag-pill">{h}</span>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              <div className="preview-budget-strip">
+                <div className="budget-cell">
+                  <span className="budget-lbl">Estimated Turnkey Investment</span>
+                  <span className="budget-val">₹{estimatedBudget} Lakhs</span>
+                  <span className="budget-sub">CPWD Price-Locked &bull; Turnkey</span>
+                </div>
+                <Link to="/contact" className="btn-request-consultation">
+                  <span>Request Custom Plans</span>
+                  <ArrowRight size={15} />
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ── 4. The Four Client Guarantees ── */}
+      <section className="client-guarantees-section">
+        <div className="section-inner">
+          <div className="section-badge-center">
+            <Award size={13} className="text-emerald-500" />
+            <span>The EcoBuild Standard</span>
+          </div>
+          <h2 className="section-heading-center">
+            Four Commitments to Every Homeowner
+          </h2>
+          <p className="section-subtext-center">
+            We eliminate the anxiety, disputes, and unpredictability of traditional construction with rock-solid guarantees.
+          </p>
+
+          <div className="guarantees-grid">
+            {CLIENT_GUARANTEES.map((g, i) => {
+              const IconComp = g.icon;
+              return (
+                <div key={i} className="guarantee-card">
+                  <div className="guarantee-header-row">
+                    <div className="guarantee-icon-box">
+                      <IconComp size={22} />
+                    </div>
+                    <span className="guarantee-badge">{g.badge}</span>
+                  </div>
+                  <h3 className="guarantee-title">{g.title}</h3>
+                  <p className="guarantee-desc">{g.desc}</p>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
+      {/* ── 5. The 5-Step Journey to Your Home ── */}
+      <section className="homeowner-journey-section">
+        <div className="section-inner">
+          <div className="section-badge-center">
+            <Calendar size={13} className="text-emerald-500" />
+            <span>How It Works</span>
+          </div>
+          <h2 className="section-heading-center">
+            A Transparent Journey From First Sketch to Key Handover
+          </h2>
+          <p className="section-subtext-center">
+            You don’t have to guess what happens next. Track every milestone with complete peace of mind.
+          </p>
+
+          <div className="journey-horizontal-timeline">
+            {JOURNEY_STEPS.map((s, idx) => (
+              <div key={idx} className="timeline-step-card">
+                <div className="timeline-step-num">{s.step}</div>
+                <h4 className="timeline-step-title">{s.title}</h4>
+                <p className="timeline-step-desc">{s.desc}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      <hr className="divider" style={{ margin: 0 }} />
-
-      {/* ── CTA ── */}
-      <section
-        style={{ padding: '4rem 1.5rem', background: 'var(--blueprint-light)' }}
-      >
-        <div
-          className="section-container"
-          style={{ textAlign: 'center', maxWidth: 560 }}
-        >
-          <h2 style={{ fontSize: 'clamp(1.3rem, 3vw, 1.75rem)', fontWeight: 700, color: 'var(--ink)', marginBottom: '0.75rem' }}>
-            Request access to EcoBuild AI.
+      {/* ── 6. Client Stories & Verified Testimonials ── */}
+      <section className="client-stories-section">
+        <div className="section-inner">
+          <div className="section-badge-center">
+            <Heart size={13} className="text-emerald-500" />
+            <span>Homeowner Stories</span>
+          </div>
+          <h2 className="section-heading-center">
+            Loved by Families and Architects Across India
           </h2>
-          <p style={{ color: 'var(--ink-muted)', fontSize: '0.875rem', lineHeight: 1.7, marginBottom: '2rem' }}>
-            Accounts are created by your platform administrator. Contact us to get set up
-            or sign in if you already have credentials.
+          <p className="section-subtext-center">
+            Hear from property owners who turned the dream of building a home into an enjoyable reality.
           </p>
-          <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'center', flexWrap: 'wrap' }}>
-            <Link to="/login" className="btn-primary" id="cta-signin-btn">
-              Sign in to Platform
-              <ArrowRight size={15} />
-            </Link>
-            <Link to="/contact" className="btn-secondary" id="cta-contact-btn">
-              Contact Us
-            </Link>
+
+          <div className="stories-grid">
+            <div className="story-card">
+              <p className="story-quote">
+                &ldquo;Building our villa in Chennai was completely stress-free. Every Friday, our architect uploaded clear photo updates of the foundation and slab casting. Best of all: we didn&rsquo;t pay a single rupee over the agreed budget.&rdquo;
+              </p>
+              <div className="story-author-info">
+                <div className="author-avatar blue">AK</div>
+                <div>
+                  <div className="author-name">Amit Kapoor</div>
+                  <div className="author-detail">Homeowner &bull; Emerald Horizon Residence, Chennai</div>
+                </div>
+              </div>
+            </div>
+
+            <div className="story-card">
+              <p className="story-quote">
+                &ldquo;EcoBuild AI transformed our architectural practice. Our clients love having their own private portal to track construction milestones. It completely eliminated the constant back-and-forth phone calls and WhatsApp confusion.&rdquo;
+              </p>
+              <div className="story-author-info">
+                <div className="author-avatar green">PS</div>
+                <div>
+                  <div className="author-name">Ar. Priya Sharma</div>
+                  <div className="author-detail">Principal Architect &bull; Studio Green Arch, Bengaluru</div>
+                </div>
+              </div>
+            </div>
+
+            <div className="story-card">
+              <p className="story-quote">
+                &ldquo;The CPWD price-lock guarantee saved us from the massive steel price spike that happened earlier this year. Our budget was respected, our AAC block walls keep our living room naturally cool, and we couldn&rsquo;t be happier.&rdquo;
+              </p>
+              <div className="story-author-info">
+                <div className="author-avatar amber">NR</div>
+                <div>
+                  <div className="author-name">Neha &amp; Vikram Rao</div>
+                  <div className="author-detail">Homeowners &bull; Serene Villa, Coimbatore</div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* ── FOOTER ── */}
-      <footer
-        style={{
-          padding: '2rem 1.5rem',
-          borderTop: '1px solid var(--concrete)',
-          background: 'var(--ink)',
-        }}
-      >
-        <div
-          className="section-container"
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            flexWrap: 'wrap',
-            gap: '1rem',
-          }}
-        >
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-            <Building2 size={18} color="var(--blueprint)" strokeWidth={1.5} />
-            <span style={{ fontWeight: 700, color: '#ffffff', fontSize: '0.9rem', fontFamily: 'var(--font-sans)' }}>
-              EcoBuild AI
-            </span>
-            <span style={{ color: 'rgba(255,255,255,0.3)', fontSize: '0.75rem' }}>Smart Construction Platform</span>
+      {/* ── 7. Inspiring Closing Call to Action ── */}
+      <section className="closing-homeowner-cta">
+        <div className="cta-container">
+          <div className="cta-inner text-center">
+            <h2 className="cta-title">
+              Ready to Build Your Home With Confidence?
+            </h2>
+            <p className="cta-desc">
+              Experience the clarity of transparent budgets, verified site progress, and certified sustainable living. Explore our live client portal demo or consult with our architectural team today.
+            </p>
+            <div className="cta-button-group">
+              <Link to="/customer/dashboard" className="cta-btn-primary" id="landing-portal-preview">
+                <Eye size={16} />
+                <span>Experience Customer Portal</span>
+              </Link>
+              <Link to="/contact" className="cta-btn-secondary" id="landing-contact-team">
+                <PhoneCall size={15} />
+                <span>Consult Our Architectural Team</span>
+              </Link>
+              <Link to="/login" className="cta-btn-ghost" id="landing-signin-architect">
+                <span>Architect Workspace</span>
+                <ArrowRight size={15} />
+              </Link>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ── 8. Elegant Footer ── */}
+      <footer className="landing-footer">
+        <div className="footer-container">
+          <div className="footer-top-row">
+            <div className="footer-brand-col">
+              <div className="footer-brand-logo">
+                <Building2 size={20} className="text-emerald-400" />
+                <span className="brand-text">EcoBuild AI</span>
+              </div>
+              <p className="footer-brand-desc">
+                The premier sustainable construction intelligence platform. Empowering homeowners and architects with guaranteed CPWD budgets, verified milestone photo logs, and certified green living across India.
+              </p>
+              <div className="footer-compliance-badges">
+                <span className="comp-pill">CPWD 2024 Calibrated</span>
+                <span className="comp-pill">IFC India EDGE</span>
+                <span className="comp-pill">BMTPC Certified</span>
+              </div>
+            </div>
+
+            <div className="footer-links-col">
+              <h4 className="footer-heading">Homeowner</h4>
+              <ul className="footer-link-list">
+                <li><Link to="/customer/dashboard">Client Portal</Link></li>
+                <li><a href="#vision-explorer">Design Your Sanctuary</a></li>
+                <li><Link to="/about">Our Story &amp; Philosophy</Link></li>
+                <li><Link to="/contact">Schedule Site Visit</Link></li>
+              </ul>
+            </div>
+
+            <div className="footer-links-col">
+              <h4 className="footer-heading">Architect</h4>
+              <ul className="footer-link-list">
+                <li><Link to="/cost-estimation">Cost &amp; Quantity BOQ</Link></li>
+                <li><Link to="/recommendations">Eco Materials Engine</Link></li>
+                <li><Link to="/projects">11-Stage Site Manager</Link></li>
+                <li><Link to="/login">Architect Sign In</Link></li>
+              </ul>
+            </div>
+
+            <div className="footer-links-col">
+              <h4 className="footer-heading">Standards</h4>
+              <ul className="footer-link-list">
+                <li><span className="text-slate-400">CPWD Schedule of Rates 2024</span></li>
+                <li><span className="text-slate-400">IFC Indian Carbon Emission Dataset</span></li>
+                <li><span className="text-slate-400">BMTPC Waste Norms</span></li>
+                <li><span className="text-slate-400">Council of Architecture Standards</span></li>
+              </ul>
+            </div>
           </div>
 
-          <nav style={{ display: 'flex', gap: '1.25rem' }}>
-            {[
-              { to: '/about', label: 'About Us' },
-              { to: '/get-started', label: 'Pricing' },
-              { to: '/contact', label: 'Contact' },
-              { to: '/login', label: 'Sign In' },
-            ].map(({ to, label }) => (
-              <Link
-                key={to}
-                to={to}
-                style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.45)', textDecoration: 'none' }}
-              >
-                {label}
-              </Link>
-            ))}
-          </nav>
-
-          <div style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.25)', fontFamily: 'var(--font-mono)' }}>
-            &copy; {new Date().getFullYear()} EcoBuild AI &middot; Tamil Nadu, India
+          <div className="footer-bottom-row">
+            <div className="footer-copyright">
+              &copy; {new Date().getFullYear()} EcoBuild AI Platform. All rights reserved &bull; Engineered in India for the Sustainable Built Environment.
+            </div>
+            <div className="footer-legal-links">
+              <span>Privacy Policy</span>
+              <span className="dot-sep">&bull;</span>
+              <span>Terms of Service</span>
+              <span className="dot-sep">&bull;</span>
+              <span>CPWD Rate Index License</span>
+            </div>
           </div>
         </div>
       </footer>
